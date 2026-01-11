@@ -1,0 +1,1264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.3">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ja"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;救急対応サポート（最上位UX・学校版）&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>-webkit-tap-highlight-color: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding-bottom: 110px; /* bottom action bar */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>input, select, textarea { min-height: 48px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>select {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>appearance: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-repeat: no-repeat;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-position: right 0.75rem center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-size: 1rem;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding-right: 2.5rem !important;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.input-label {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 0.75rem;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 800;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #64748b;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 0.25rem;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing: .02em;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chip {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: all 0.12s;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 1px 2px rgba(0,0,0,0.05);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>min-height: 44px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px 8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>line-height: 1.2;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>user-select: none;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chip:active { transform: scale(0.97); filter: brightness(0.95); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.collapse-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.collapse-content.open { max-height: 2000px; transition: max-height 0.5s ease-in; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.recording-ring { animation: ring-pulse 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes ring-pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0; } }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.toast {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position: fixed;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>left: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transform: translateX(-50%);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>bottom: 120px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>z-index: 60;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(15, 23, 42, 0.92);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 999px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 800;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 10px 25px rgba(0,0,0,.25);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>opacity: 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pointer-events: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: opacity .18s ease;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>max-width: calc(100vw - 24px);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>white-space: nowrap;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-overflow: ellipsis;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.toast.show { opacity: 1; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* 印刷用設定 */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@media print {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.no-print { display: none !important; }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>body { background: #fff !important; padding: 0 !important; }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>main { padding: 0 !important; }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>#printArea { display: block !important; }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>#printArea * { color: #000 !important; }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.print-section { break-inside: avoid; }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.print-row { border-bottom: 1px solid #bbb; padding: 6px 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#printArea { display:none; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;body class="bg-slate-100 text-slate-900"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- PRINT AREA --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;section id="printArea" class="p-5"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="flex items-end justify-between border-b-2 border-black pb-2 mb-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1 class="text-2xl font-black"&gt;救急搬送・経過記録用紙&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-xs font-bold text-gray-600"&gt;（端末内で作成・記録）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="text-sm font-bold" id="printTimestamp"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="grid grid-cols-2 gap-3 border p-3 rounded-lg mb-3 print-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-black text-gray-600"&gt;学校名&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="p_schoolName" class="text-sm font-bold"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-black text-gray-600"&gt;住所 / 電話&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="p_schoolAddrPhone" class="text-sm font-bold"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="col-span-2 border-t pt-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-black text-gray-600"&gt;発生場所（校内）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="p_place" class="text-sm font-bold"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="grid grid-cols-2 gap-3 border p-3 rounded-lg mb-3 print-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-black text-gray-600"&gt;傷病者（氏名）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="p_name" class="text-sm font-bold"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-black text-gray-600"&gt;学年 / 性別 / 年齢&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="p_gradeSexAge" class="text-sm font-bold"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="col-span-2 border-t pt-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-black text-gray-600"&gt;主訴・症状 / 既往 / アレルギー&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="p_med" class="text-sm"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="grid grid-cols-2 gap-3 border p-3 rounded-lg mb-3 print-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-black text-gray-600"&gt;対応者（主）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="p_responder" class="text-sm font-bold"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-black text-gray-600"&gt;記録者&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="p_recorder" class="text-sm font-bold"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="col-span-2 border-t pt-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-black text-gray-600"&gt;連絡（保護者等）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="p_contact" class="text-sm"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="border-t-2 border-black pt-2 mb-2 print-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h2 class="text-lg font-black"&gt;時系列記録&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="text-[10px] font-bold text-gray-600 mb-1"&gt;※押した順に記録（編集可）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="p_timeline" class="border-t border-black"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="grid grid-cols-2 gap-6 mt-8 print-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="border-t border-black pt-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-xs font-black"&gt;救急隊へ引継ぎ（署名）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="h-10"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="border-t border-black pt-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-xs font-black"&gt;管理職報告（署名）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="h-10"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="mt-6 text-[10px] text-gray-400 text-right"&gt;Generated by 救急対応サポート&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- HEADER --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;header class="sticky top-0 z-40 bg-white shadow-sm border-b no-print"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="px-4 py-3 flex items-center justify-between gap-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="min-w-0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1 class="text-base font-black leading-tight text-red-600 truncate"&gt;救急対応サポート&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] text-slate-500 font-bold"&gt;学校用：通報原稿 + 記録 + 引継ぎ（端末内保存）&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="flex items-center gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnNewIncident" class="px-3 py-2 rounded-full text-xs font-black border border-slate-200 bg-slate-50 active:bg-slate-100"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>新規</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="tel:119" class="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-black flex items-center gap-2 animate-pulse"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"&gt;&lt;path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"&gt;&lt;/path&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>119</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- STEPS --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="px-3 pb-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="bg-slate-50 border rounded-2xl p-2 flex items-center gap-2 overflow-x-auto"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="stepBtn px-3 py-2 rounded-xl text-xs font-black bg-white border" data-step="1"&gt;①初動&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="stepBtn px-3 py-2 rounded-xl text-xs font-black bg-white border" data-step="2"&gt;②通報&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="stepBtn px-3 py-2 rounded-xl text-xs font-black bg-white border" data-step="3"&gt;③記録&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="stepBtn px-3 py-2 rounded-xl text-xs font-black bg-white border" data-step="4"&gt;④引継ぎ&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ml-auto flex items-center gap-2 pr-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="text-[10px] font-black text-slate-500"&gt;経過&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="elapsedBadge" class="px-2 py-1 rounded-full bg-slate-900 text-white text-[10px] font-black"&gt;--:--&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;main class="p-3 space-y-4 no-print"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- NOTICE / SAFETY --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;section class="bg-white border rounded-2xl p-4 shadow-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="flex items-start gap-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="w-10 h-10 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86l-7.14 12.36A2 2 0 004.88 19h14.24a2 2 0 001.73-2.78L13.71 3.86a2 2 0 00-3.42 0z"/&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="min-w-0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="font-black text-sm text-slate-900"&gt;これは「通報・記録・引継ぎ」を速く正確にするためのアプリです&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="text-xs text-slate-600 font-bold leading-relaxed mt-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>重大時は &lt;span class="text-red-600 font-black"&gt;119&lt;/span&gt; と、現場の指示（救急隊・医師・管理職）を最優先に。&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>記録は端末内に保存され、共有・印刷で引継ぎできます。</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid grid-cols-2 gap-2 mt-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnMarkStart" class="py-3 rounded-2xl bg-slate-900 text-white font-black text-xs active:scale-[0.99]"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>⏱ 発生（開始）を記録</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnCallAdmin" class="py-3 rounded-2xl border bg-white font-black text-xs active:bg-slate-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>📣 応援要請（校内）</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="safetyQuick" class="grid grid-cols-2 gap-2 mt-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="chip rounded-2xl bg-red-600 text-white text-xs font-black" data-log="重大：意識なし / 呼吸不明（緊急対応）"&gt;重大：意識なし&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="chip rounded-2xl bg-orange-100 text-orange-900 text-xs font-black border border-orange-200" data-log="安全確保：周囲の危険排除 / 児童を離す"&gt;安全確保&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="chip rounded-2xl bg-blue-100 text-blue-900 text-xs font-black border border-blue-200" data-log="連絡：管理職へ報告（状況共有）"&gt;管理職へ報告&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="chip rounded-2xl bg-emerald-100 text-emerald-900 text-xs font-black border border-emerald-200" data-log="誘導：正門で救急隊を誘導する職員を配置"&gt;正門誘導&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- SETTINGS --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;section class="bg-white border rounded-2xl p-4 shadow-sm space-y-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="flex items-center justify-between"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="font-black text-sm border-l-4 border-slate-900 pl-2"&gt;学校・連絡 まとめ設定&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnToggleSettings" class="text-xs font-black text-blue-600"&gt;開く&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="settingsPanel" class="hidden space-y-3 bg-slate-50 p-3 rounded-2xl border border-dashed border-slate-200"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="input-label"&gt;学校名&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="schoolName" class="w-full p-3 bg-white border rounded-xl text-sm font-bold" placeholder="〇〇市立〇〇小学校" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="input-label"&gt;住所&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="schoolAddr" class="w-full p-3 bg-white border rounded-xl text-sm font-bold" placeholder="市区町村からの住所" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-2 gap-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="input-label"&gt;学校電話&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="schoolPhone" class="w-full p-3 bg-white border rounded-xl text-sm font-bold" placeholder="03-xxxx-xxxx" inputmode="tel" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="input-label"&gt;保護者連絡（任意）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="guardianPhone" class="w-full p-3 bg-white border rounded-xl text-sm font-bold" placeholder="例：090-xxxx-xxxx" inputmode="tel" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-2 gap-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="input-label"&gt;対応者（主）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="responder" class="w-full p-3 bg-white border rounded-xl text-sm font-bold" placeholder="例：和山" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="input-label"&gt;記録者&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="recorder" class="w-full p-3 bg-white border rounded-xl text-sm font-bold" placeholder="例：〇〇" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-2 gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="btnSaveSettings" class="py-3 rounded-2xl bg-slate-900 text-white text-xs font-black"&gt;この端末に保存&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="btnResetSettings" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50"&gt;設定を消去&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-[10px] font-bold text-slate-500"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>※設定はこの端末のブラウザ内（localStorage）に保存されます。サーバ送信はしません。</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid grid-cols-1 gap-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="input-label"&gt;校内の詳しい場所（発生場所）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="place" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" placeholder="例：3F図工室、体育館北側など" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- PATIENT --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;section class="bg-white border rounded-2xl p-4 shadow-sm space-y-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h2 class="font-black text-sm border-l-4 border-red-500 pl-2"&gt;傷病者情報&lt;/h2&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="space-y-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="input-label"&gt;氏名（ふりがな）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;input id="pName" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" placeholder="山田 太郎（やまだ たろう）" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-2 gap-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="input-label"&gt;学年・区分&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="pGrade" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value=""&gt;選択&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="1"&gt;1年&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="2"&gt;2年&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="3"&gt;3年&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="4"&gt;4年&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="5"&gt;5年&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="6"&gt;6年&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="職員"&gt;教職員&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="他"&gt;その他&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="input-label"&gt;性別&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="pSex" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value=""&gt;選択&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="男性"&gt;男性&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="女性"&gt;女性&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 bg-blue-50 rounded-2xl border border-blue-100"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label class="input-label text-blue-800"&gt;生年月日（任意）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="pBirth" type="date" class="w-full p-3 border rounded-xl text-sm bg-white font-bold" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="flex items-end"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="ageDisplay" class="w-full p-3 rounded-xl bg-white border border-blue-200 text-sm font-black text-blue-900 text-center h-[48px] flex items-center justify-center shadow-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>年齢：-- 歳</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="input-label"&gt;主な症状（短くOK）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;textarea id="symptom" class="w-full p-3 bg-slate-50 border rounded-2xl text-sm font-bold" rows="2" placeholder="例：呼吸苦、意識もうろう、全身じんましん 等"&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnToggleMedical" class="w-full py-3 bg-slate-100 rounded-2xl text-[11px] font-black text-slate-600 flex justify-center items-center gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>既往歴・アレルギー等（必要なら）</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg id="iconMedical" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path d="M19 9l-7 7-7-7"&gt;&lt;/path&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="medicalPanel" class="collapse-content bg-white"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="pt-3 space-y-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label class="input-label"&gt;既往歴（持病）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;input id="pHistory" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold" placeholder="喘息、てんかん 等" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label class="input-label"&gt;アレルギー&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;input id="pAllergy" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold" placeholder="卵、ピーナッツ 等" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-2 gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;a id="btnCallGuardian" href="#" class="py-3 rounded-2xl bg-white border text-xs font-black flex items-center justify-center gap-2 active:bg-slate-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>📞 保護者へ電話</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="btnCopyGuardianMsg" class="py-3 rounded-2xl bg-slate-900 text-white text-xs font-black active:scale-[0.99]"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>✉️ 連絡文をコピー</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- CALL SCRIPT --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;section class="bg-slate-900 rounded-2xl p-4 shadow-xl space-y-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="flex items-center justify-between border-b border-white/10 pb-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="text-[10px] uppercase tracking-widest text-slate-400 font-black"&gt;119通報用 原稿&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="text-[10px] text-slate-500 font-bold"&gt;入力に応じて自動生成&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flex items-center gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="btnCopyScript" class="text-xs bg-white text-slate-900 px-3 py-2 rounded-full font-black active:bg-slate-200"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>コピー</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="btnShareScript" class="text-xs bg-slate-700 text-white px-3 py-2 rounded-full font-black active:bg-slate-600"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>共有</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="scriptDisplay" class="text-white text-sm font-medium leading-relaxed min-h-[120px] whitespace-pre-wrap"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- TIMELINE / RECORD --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;section class="bg-white border rounded-2xl p-4 shadow-sm space-y-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 class="font-black text-slate-900"&gt;経過・処置の記録&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="text-[10px] text-slate-500 font-black uppercase tracking-tight"&gt;Tap to Log / Voice / Edit&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- VOICE --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="flex flex-col items-center py-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="relative"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="pulseRing" class="absolute inset-0 rounded-full bg-red-400 hidden recording-ring"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="btnVoiceRec" class="relative z-10 w-20 h-20 rounded-full bg-blue-600 text-white shadow-lg flex items-center justify-center flex-col gap-0.5 active:scale-95 transition-transform"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;svg id="micIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-18a3 3 0 013 3v8a3 3 0 01-3 3 3 3 0 01-3-3V5a3 3 0 013-3z"&gt;&lt;/path&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span id="micText" class="text-[9px] font-black tracking-tighter uppercase"&gt;REC START&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="interimText" class="mt-2 text-xs text-blue-600 font-black h-4 italic"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="voiceHint" class="text-[10px] text-slate-500 font-bold mt-1"&gt;※対応端末のみ音声入力できます&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="space-y-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;textarea id="voiceInputArea" class="w-full p-4 bg-slate-50 border rounded-2xl text-base font-bold focus:ring-2 focus:ring-blue-500 outline-none" rows="2" placeholder="自由入力（例：○○で転倒、膝を打撲。冷却開始 など）"&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-2 gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="btnAddTimeline" class="w-full py-4 bg-slate-900 text-white font-black rounded-2xl shadow-lg active:scale-[0.98]"&gt;＋ 記録&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button id="btnUndo" class="w-full py-4 bg-white border font-black rounded-2xl active:bg-slate-50"&gt;↩ 取り消し&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;hr class="my-3"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- QUICK LOGS --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="space-y-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="border rounded-2xl overflow-hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="accBtn w-full px-4 py-3 bg-blue-50 flex justify-between items-center text-blue-900 font-black text-sm" data-acc="acc-status"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;STATUS / 意識・呼吸&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;svg class="w-4 h-4 transform transition-transform" id="icon-acc-status" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path d="M19 9l-7 7-7-7"&gt;&lt;/path&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="acc-status" class="collapse-content bg-white"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-2 gap-2 p-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-blue-100 text-blue-900 rounded-xl text-xs font-black border border-blue-200" data-log="意識あり（会話可能）"&gt;意識あり&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-orange-100 text-orange-900 rounded-xl text-xs font-black border border-orange-200" data-log="意識混濁（反応弱い）"&gt;意識混濁&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-red-600 text-white rounded-xl text-xs font-black" data-log="意識なし（無反応）"&gt;意識なし&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-slate-100 text-slate-900 rounded-xl text-xs font-black border" data-log="呼吸：正常"&gt;呼吸正常&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-orange-100 text-orange-900 rounded-xl text-xs font-black border border-orange-200" data-log="呼吸：苦しそう（呼吸困難）"&gt;呼吸困難&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-red-600 text-white rounded-xl text-xs font-black" data-log="呼吸：停止/不明（緊急）"&gt;呼吸停止/不明&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="border rounded-2xl overflow-hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="accBtn w-full px-4 py-3 bg-slate-100 flex justify-between items-center text-slate-900 font-black text-sm" data-acc="acc-symptoms"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;SYMPTOMS / 全身症状&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;svg class="w-4 h-4 transform transition-transform" id="icon-acc-symptoms" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path d="M19 9l-7 7-7-7"&gt;&lt;/path&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="acc-symptoms" class="collapse-content bg-white"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-2 gap-2 p-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-white border text-slate-900 rounded-xl text-xs font-black" data-log="顔面蒼白"&gt;顔面蒼白&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-white border text-slate-900 rounded-xl text-xs font-black" data-log="冷や汗が多い"&gt;冷や汗&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-white border text-slate-900 rounded-xl text-xs font-black" data-log="嘔吐あり"&gt;嘔吐あり&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-white border text-slate-900 rounded-xl text-xs font-black" data-log="痙攣（けいれん）あり"&gt;痙攣あり&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-white border text-slate-900 rounded-xl text-xs font-black" data-log="じんましん出現"&gt;じんましん&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-white border text-slate-900 rounded-xl text-xs font-black" data-log="激しい腹痛"&gt;激しい腹痛&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-white border text-slate-900 rounded-xl text-xs font-black" data-log="鼻出血（鼻血）"&gt;鼻出血&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-white border text-slate-900 rounded-xl text-xs font-black" data-log="痛みが強い（部位：未記載）"&gt;強い痛み&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="border rounded-2xl overflow-hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="accBtn w-full px-4 py-3 bg-emerald-50 flex justify-between items-center text-emerald-900 font-black text-sm" data-acc="acc-treatment"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span&gt;TREATMENT / 対応・処置（記録用）&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;svg class="w-4 h-4 transform transition-transform" id="icon-acc-treatment" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path d="M19 9l-7 7-7-7"&gt;&lt;/path&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div id="acc-treatment" class="collapse-content bg-white"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-2 gap-2 p-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-emerald-100 text-emerald-900 rounded-xl text-xs font-black border border-emerald-200" data-log="安静確保（座位/臥位）"&gt;安静確保&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-emerald-100 text-emerald-900 rounded-xl text-xs font-black border border-emerald-200" data-log="冷却開始（保冷剤等）"&gt;冷却開始&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-emerald-100 text-emerald-900 rounded-xl text-xs font-black border border-emerald-200" data-log="圧迫止血（ガーゼ等）"&gt;圧迫止血&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-emerald-100 text-emerald-900 rounded-xl text-xs font-black border border-emerald-200" data-log="保温（毛布等）"&gt;保温&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-emerald-100 text-emerald-900 rounded-xl text-xs font-black border border-emerald-200" data-log="水分摂取は控える（指示待ち）"&gt;飲食控え&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-emerald-100 text-emerald-900 rounded-xl text-xs font-black border border-emerald-200" data-log="救急セット使用（内容は別途）"&gt;救急セット&lt;/button&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-red-100 text-red-900 rounded-xl text-xs font-black border-2 border-red-200" data-log="AED準備/装着（解析待ち）"&gt;AED準備&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;button class="chip bg-red-600 text-white rounded-xl text-xs font-black" data-log="救急隊へ引継ぎ開始"&gt;引継ぎ開始&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-1 gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="chip bg-slate-900 text-white rounded-2xl text-xs font-black" data-log="救急車 到着（正門誘導→引継ぎへ）"&gt;🚑 救急車 到着&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- LOG LIST --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="pt-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flex items-center justify-between"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;h3 class="text-[11px] font-black text-slate-500 uppercase tracking-widest"&gt;Activity Log&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="flex items-center gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="btnCopyTimeline" class="px-3 py-2 text-slate-600 text-xs font-black border rounded-full active:bg-slate-50"&gt;コピー&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="btnExportTxt" class="px-3 py-2 text-slate-600 text-xs font-black border rounded-full active:bg-slate-50"&gt;TXT&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="btnExportJson" class="px-3 py-2 text-slate-600 text-xs font-black border rounded-full active:bg-slate-50"&gt;JSON&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="timeline" class="space-y-2 mt-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;p id="timelineEmpty" class="text-center text-slate-400 py-10 text-sm font-bold"&gt;（記録なし）&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- HANDOFF --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;section class="bg-white border rounded-2xl p-4 shadow-sm space-y-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h2 class="font-black text-sm border-l-4 border-blue-600 pl-2"&gt;引継ぎ（印刷 / 共有）&lt;/h2&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="grid grid-cols-2 gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnPrint" class="py-4 bg-blue-600 text-white text-xs font-black rounded-2xl shadow-lg flex items-center justify-center gap-2 active:scale-95"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"&gt;&lt;/path&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>用紙として印刷</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnShareAll" class="py-4 bg-slate-900 text-white text-xs font-black rounded-2xl shadow-lg active:scale-95"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>共有（全文）</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="text-[10px] text-slate-500 font-bold leading-relaxed"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>共有は端末の「共有」機能がある場合に動作します（メール/Teams/メモ等へ）。&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>印刷はプリンタがなくても「PDF保存」で提出用に残せます。</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- BOTTOM ACTION BAR --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;nav class="fixed bottom-0 left-0 right-0 bg-white border-t no-print shadow-[0_-4px_15px_rgba(0,0,0,0.1)] z-50 safe-area-bottom"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="px-3 py-2 grid grid-cols-3 gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnGoCall" class="py-3 rounded-2xl bg-white border font-black text-xs active:bg-slate-50"&gt;②通報へ&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnGoLog" class="py-3 rounded-2xl bg-slate-900 text-white font-black text-xs active:scale-[0.99]"&gt;③記録へ&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnGoHandoff" class="py-3 rounded-2xl bg-blue-600 text-white font-black text-xs active:scale-[0.99]"&gt;④引継ぎへ&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/nav&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="toast" class="toast"&gt;OK&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const $ = (id) =&gt; document.getElementById(id);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- constants</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const KEY_SETTINGS = "school_emergency_settings_v9";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const KEY_INCIDENT<span class="Apple-converted-space">  </span>= "school_emergency_incident_v9";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- state</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let computedAgeStr = "--";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let incidentStartAt = null; // timestamp</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let lastDeleted = null; // undo payload { id, data, index }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- toast</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function toast(msg) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const t = $("toast");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>t.textContent = msg;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>t.classList.add("show");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; t.classList.remove("show"), 1200);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function haptic(ms=15){ if(navigator.vibrate) navigator.vibrate(ms); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- helpers</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function nowTimeStr(d=new Date()) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function nowDateTimeStr(d=new Date()) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return d.toLocaleString('ja-JP');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function safeText(v){ return (v||"").toString().trim(); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- accordion</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function toggleAccordion(id){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const el = $(id);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const icon = $("icon-" + id);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el.classList.toggle("open");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>icon.classList.toggle("rotate-180");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll(".accBtn").forEach(btn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.addEventListener("click", ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>toggleAccordion(btn.dataset.acc);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// medical panel</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnToggleMedical").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("medicalPanel").classList.toggle("open");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("iconMedical").classList.toggle("rotate-180");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// settings</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnToggleSettings").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("settingsPanel").classList.toggle("hidden");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("btnToggleSettings").textContent = $("settingsPanel").classList.contains("hidden") ? "開く" : "閉じる";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- stepper scroll</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function scrollToSection(selector){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const el = document.querySelector(selector);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!el) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el.scrollIntoView({behavior:"smooth", block:"start"});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function setStepActive(step){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll(".stepBtn").forEach(b=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const on = (b.dataset.step === String(step));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>b.classList.toggle("bg-slate-900", on);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>b.classList.toggle("text-white", on);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>b.classList.toggle("border-slate-900", on);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>b.classList.toggle("bg-white", !on);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll(".stepBtn").forEach(b=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>b.addEventListener("click", ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const s = b.dataset.step;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setStepActive(s);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(s==="1") scrollToSection("main section:nth-of-type(1)");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(s==="2") scrollToSection("section:nth-of-type(4)"); // call script card</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(s==="3") scrollToSection("section:nth-of-type(5)"); // timeline card</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(s==="4") scrollToSection("section:nth-of-type(6)"); // handoff</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnGoCall").onclick = ()=&gt;{ setStepActive(2); scrollToSection("section:nth-of-type(4)"); };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnGoLog").onclick<span class="Apple-converted-space">  </span>= ()=&gt;{ setStepActive(3); scrollToSection("section:nth-of-type(5)"); };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnGoHandoff").onclick = ()=&gt;{ setStepActive(4); scrollToSection("section:nth-of-type(6)"); };</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- elapsed timer</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function tickElapsed(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const badge = $("elapsedBadge");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!incidentStartAt){ badge.textContent = "--:--"; return; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const diff = Date.now() - incidentStartAt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const m = Math.floor(diff/60000);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const s = Math.floor((diff%60000)/1000);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>badge.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setInterval(tickElapsed, 1000);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- age calc</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function updateAge(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const birthVal = $("pBirth").value;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const gradeVal = $("pGrade").value;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const now = new Date();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (birthVal) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const birthDate = new Date(birthVal);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let age = now.getFullYear() - birthDate.getFullYear();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const m = now.getMonth() - birthDate.getMonth();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (m &lt; 0 || (m === 0 &amp;&amp; now.getDate() &lt; birthDate.getDate())) age--;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>computedAgeStr = `${age}歳`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else if (gradeVal &amp;&amp; !isNaN(gradeVal)) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const grade = parseInt(gradeVal,10);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>computedAgeStr = `${grade + 5}〜${grade + 6}歳相当`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>computedAgeStr = "--";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("ageDisplay").innerText = `年齢：${computedAgeStr}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>persistIncident();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- call/guardian helpers</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function guardianHref(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const p = safeText($("guardianPhone").value);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return p ? `tel:${p}` : "#";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function updateGuardianLink(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const a = $("btnCallGuardian");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const p = safeText($("guardianPhone").value);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(p){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>a.href = `tel:${p}`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>a.classList.remove("opacity-50");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}else{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>a.href = "#";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>a.classList.add("opacity-50");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- speech recognition</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let recognition = null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let isRecording = false;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (SpeechRecognition) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>recognition = new SpeechRecognition();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>recognition.lang = "ja-JP";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>recognition.continuous = true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>recognition.interimResults = true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>recognition.onresult = (event)=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let interim = "";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let final = "";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for(let i=event.resultIndex; i&lt;event.results.length; i++){</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if(event.results[i].isFinal) final += event.results[i][0].transcript;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>else interim += event.results[i][0].transcript;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(final) $("voiceInputArea").value += final;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("interimText").innerText = interim;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>recognition.onend = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(isRecording) recognition.start();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("voiceHint").textContent = "※この端末では音声入力に対応していません";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("btnVoiceRec").disabled = true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("btnVoiceRec").classList.add("opacity-50");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function startRec(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!recognition) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>isRecording = true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>recognition.start();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("pulseRing").classList.remove("hidden");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("btnVoiceRec").classList.replace("bg-blue-600","bg-red-600");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("micText").innerText = "REC ON";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>toast("録音開始");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>haptic(20);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} catch(e){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// ignore if already started</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function stopRec(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>isRecording = false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(recognition) recognition.stop();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pulseRing").classList.add("hidden");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("btnVoiceRec").classList.replace("bg-red-600","bg-blue-600");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("micText").innerText = "REC START";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("interimText").innerText = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>haptic(10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnVoiceRec").onclick = ()=&gt; isRecording ? stopRec() : startRec();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- timeline CRUD</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function makeEntryObj(text, t=new Date()){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>at: t.toISOString(),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>time: nowTimeStr(t),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text: safeText(text),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>important: false</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function renderEntry(entry){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const div = document.createElement("div");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>div.className = "bg-white border rounded-2xl p-3 shadow-sm";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>div.dataset.id = entry.id;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const impClass = entry.important ? "bg-yellow-50 border-yellow-200" : "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>div.classList.add(...impClass.split(" ").filter(Boolean));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>div.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="flex items-start gap-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="shrink-0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="text-blue-600 font-black text-xs"&gt;${entry.time}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="mt-1 px-2 py-1 rounded-full text-[10px] font-black border ${entry.important ? "bg-yellow-200 border-yellow-300" : "bg-slate-50"}" data-act="imp"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>${entry.important ? "★重要" : "☆重要"}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flex-1 min-w-0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="text-slate-900 text-sm font-black whitespace-pre-wrap break-words" data-role="text"&gt;${escapeHtml(entry.text)}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="flex items-center gap-2 mt-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="px-3 py-2 rounded-full text-xs font-black border bg-white active:bg-slate-50" data-act="edit"&gt;編集&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="px-3 py-2 rounded-full text-xs font-black border bg-white active:bg-slate-50" data-act="del"&gt;削除&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="ml-auto px-3 py-2 rounded-full text-xs font-black bg-slate-900 text-white active:scale-[0.99]" data-act="dup"&gt;同じ内容&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>div.addEventListener("click", (e)=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const btn = e.target.closest("button");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(!btn) return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const act = btn.dataset.act;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(act==="edit") editEntry(entry.id);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(act==="del") deleteEntry(entry.id);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(act==="dup") addEntry(entry.text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(act==="imp") toggleImportant(entry.id);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return div;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function escapeHtml(str){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return (str||"").replaceAll("&amp;","&amp;amp;").replaceAll("&lt;","&amp;lt;").replaceAll("&gt;","&amp;gt;").replaceAll('"',"&amp;quot;").replaceAll("'","&amp;#039;");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function getEntries(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const saved = localStorage.getItem(KEY_INCIDENT);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!saved) return [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try { return (JSON.parse(saved).entries || []); } catch { return []; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function setEntries(entries){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const incident = loadIncidentRaw() || {};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>incident.entries = entries;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>localStorage.setItem(KEY_INCIDENT, JSON.stringify(incident));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function refreshTimeline(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const box = $("timeline");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>box.innerHTML = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const entries = getEntries();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(entries.length===0){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("timelineEmpty").classList.remove("hidden");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box.appendChild($("timelineEmpty"));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("timelineEmpty").classList.add("hidden");</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// newest first</p>
+<p class="p1"><span class="Apple-converted-space">    </span>entries.slice().reverse().forEach(en=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box.appendChild(renderEntry(en));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function addEntry(text){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const t = safeText(text);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!t) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const entries = getEntries();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const obj = makeEntryObj(t, new Date());</p>
+<p class="p1"><span class="Apple-converted-space">    </span>entries.push(obj);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setEntries(entries);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("voiceInputArea").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>stopRec();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>refreshTimeline();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>persistIncident();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("記録しました");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>haptic(12);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function findEntryIndex(entries, id){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return entries.findIndex(e=&gt;e.id===id);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function editEntry(id){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const entries = getEntries();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const idx = findEntryIndex(entries, id);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(idx&lt;0) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const current = entries[idx].text;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const next = prompt("記録を編集（短くてもOK）", current);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(next===null) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>entries[idx].text = safeText(next);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setEntries(entries);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>refreshTimeline();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>persistIncident();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("編集しました");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function deleteEntry(id){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const entries = getEntries();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const idx = findEntryIndex(entries, id);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(idx&lt;0) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const removed = entries.splice(idx,1)[0];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setEntries(entries);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>lastDeleted = { removed, idx };</p>
+<p class="p1"><span class="Apple-converted-space">    </span>refreshTimeline();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>persistIncident();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("削除しました（取り消し可）");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>haptic(10);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function toggleImportant(id){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const entries = getEntries();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const idx = findEntryIndex(entries, id);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(idx&lt;0) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>entries[idx].important = !entries[idx].important;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setEntries(entries);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>refreshTimeline();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>persistIncident();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnUndo").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!lastDeleted) { toast("取り消すものがありません"); return; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const entries = getEntries();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>entries.splice(lastDeleted.idx, 0, lastDeleted.removed);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setEntries(entries);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>lastDeleted = null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>refreshTimeline();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>persistIncident();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("取り消しました");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// quick log buttons</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll("[data-log]").forEach(btn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.addEventListener("click", ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>addEntry(btn.dataset.log);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnAddTimeline").onclick = ()=&gt; addEntry($("voiceInputArea").value);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- call script builder</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function gradeLabel(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const v = $("pGrade").value;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!v) return "（不明）";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(/^\d$/.test(v)) return v + "年生";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return v;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function buildScript(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const data = {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>school: $("schoolName").value || "（学校名）",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>addr: $("schoolAddr").value || "（学校住所）",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>place: $("place").value || "（校内の場所）",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>phone: $("schoolPhone").value || "（電話）",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pName: $("pName").value || "（氏名）",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pGrade: gradeLabel(),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pSex: $("pSex").value || "（性別）",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>age: (computedAgeStr !== "--") ? computedAgeStr : "",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>symptom: $("symptom").value || "（症状）",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>responder: $("responder").value || "（対応者）",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const startLine = incidentStartAt ? `発生：${new Date(incidentStartAt).toLocaleString('ja-JP')}` : `発生：未記録`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const escortLine = `正門にて誘導待機します。`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const script =</p>
+<p class="p1">`「救急要請です」<span class="Apple-converted-space"> </span></p>
+<p class="p1">${startLine}</p>
+<p class="p2"><br></p>
+<p class="p1">場所：${data.school}</p>
+<p class="p1">住所：${data.addr}</p>
+<p class="p1">校内：${data.place}</p>
+<p class="p1">電話：${data.phone}</p>
+<p class="p2"><br></p>
+<p class="p1">対象：${data.pName}（${data.pGrade}・${data.pSex}${data.age ? "・" + data.age : ""}）</p>
+<p class="p1">症状：${data.symptom}</p>
+<p class="p2"><br></p>
+<p class="p1">対応：${data.responder}</p>
+<p class="p1">${escortLine}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("scriptDisplay").innerText = script.trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- copy/share</p>
+<p class="p1"><span class="Apple-converted-space">  </span>async function copyText(text){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await navigator.clipboard.writeText(text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>toast("コピーしました");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} catch {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const temp = document.createElement("textarea");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>temp.value = text;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.body.appendChild(temp);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>temp.select();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.execCommand("copy");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.body.removeChild(temp);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>toast("コピーしました");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function fullReportText(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const entries = getEntries();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const lines = entries.map(e=&gt; `${e.time} ${e.important ? "★ " : ""}${e.text}`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const contact = safeText($("guardianPhone").value) ? `保護者連絡：${$("guardianPhone").value}` : `保護者連絡：未設定`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"【救急対応 記録】",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`作成：${nowDateTimeStr()}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`学校：${$("schoolName").value || "未設定"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`住所：${$("schoolAddr").value || "未設定"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`電話：${$("schoolPhone").value || "未設定"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`発生場所：${$("place").value || "未入力"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`傷病者：${$("pName").value || "未入力"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`学年等：${gradeLabel()}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`性別：${$("pSex").value || "-"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`年齢：${computedAgeStr}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`症状：${$("symptom").value || "-"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`既往：${$("pHistory").value || "-"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`アレルギー：${$("pAllergy").value || "-"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`対応者：${$("responder").value || "-"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`記録者：${$("recorder").value || "-"}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>contact,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"【時系列】",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...(lines.length ? lines : ["（記録なし）"]),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>].join("\n");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>async function shareText(title, text){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(navigator.share){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>try{</p>
+<p class="p1"><span class="Apple-converted-space">        </span>await navigator.share({ title, text });</p>
+<p class="p1"><span class="Apple-converted-space">        </span>toast("共有しました");</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}catch(e){</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// user canceled or not supported</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>await copyText(text);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("共有できないためコピーしました");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnCopyScript").onclick = ()=&gt; copyText($("scriptDisplay").innerText);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnShareScript").onclick = ()=&gt; shareText("119通報用原稿", $("scriptDisplay").innerText);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnCopyTimeline").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const entries = getEntries();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const lines = entries.map(e=&gt; `${e.time} ${e.important ? "★ " : ""}${e.text}`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>copyText(lines.join("\n") || "（記録なし）");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- exports</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function downloadBlob(filename, text, type="text/plain"){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const blob = new Blob([text], {type});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const url = URL.createObjectURL(blob);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const a = document.createElement("a");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.href = url;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.download = filename;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.body.appendChild(a);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.click();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a.remove();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>URL.revokeObjectURL(url);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnExportTxt").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const name = ($("pName").value || "report").replace(/\s+/g,"_");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>downloadBlob(`emergency_${name}_${Date.now()}.txt`, fullReportText(), "text/plain");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("TXTを書き出しました");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnExportJson").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const obj = loadIncidentRaw() || {};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>downloadBlob(`emergency_data_${Date.now()}.json`, JSON.stringify(obj, null, 2), "application/json");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("JSONを書き出しました");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnShareAll").onclick = ()=&gt; shareText("救急対応 記録", fullReportText());</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- print</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnPrint").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// populate print</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("printTimestamp").innerText = `作成：${nowDateTimeStr()}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("p_schoolName").innerText = $("schoolName").value || "未設定";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("p_schoolAddrPhone").innerText = `${$("schoolAddr").value || "未設定"} / ${$("schoolPhone").value || "未設定"}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("p_place").innerText = $("place").value || "未入力";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("p_name").innerText = $("pName").value || "未入力";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("p_gradeSexAge").innerText = `${gradeLabel()} / ${$("pSex").value || "-"} / ${computedAgeStr}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>let med = `【症状】${$("symptom").value || "未入力"}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if($("pHistory").value) med += `　【既往】${$("pHistory").value}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if($("pAllergy").value) med += `　【アレルギー】${$("pAllergy").value}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("p_med").innerText = med;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("p_responder").innerText = $("responder").value || "-";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("p_recorder").innerText = $("recorder").value || "-";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("p_contact").innerText = $("guardianPhone").value ? `保護者：${$("guardianPhone").value}` : "未設定";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// timeline</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const entries = getEntries();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const container = $("p_timeline");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>container.innerHTML = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(entries.length===0){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>container.innerHTML = `&lt;div class="print-row text-sm text-gray-500"&gt;記録はありません&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>entries.forEach(e=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const row = document.createElement("div");</p>
+<p class="p1"><span class="Apple-converted-space">        </span>row.className = "print-row flex gap-3";</p>
+<p class="p1"><span class="Apple-converted-space">        </span>row.innerHTML = `&lt;div class="w-16 font-bold"&gt;${e.time}&lt;/div&gt;&lt;div class="flex-1 text-sm"&gt;${escapeHtml((e.important ? "★ " : "") + e.text)}&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>container.appendChild(row);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>window.print();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- start mark</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnMarkStart").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!incidentStartAt){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>incidentStartAt = Date.now();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>persistIncident();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>toast("開始を記録しました");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>haptic(18);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>toast("すでに開始は記録済み");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- call admin (log only)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnCallAdmin").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>addEntry("応援要請：校内へ協力依頼（役割分担）");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- guardian msg copy</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnCopyGuardianMsg").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const msg =</p>
+<p class="p1">`【学校からの連絡】${$("schoolName").value || "（学校）"}です。</p>
+<p class="p1">お子さんの体調不良/負傷で対応しています。</p>
+<p class="p1">状況：${$("symptom").value || "確認中"}</p>
+<p class="p1">場所：${$("place").value || "校内"}</p>
+<p class="p1">必要に応じて救急要請・医療機関受診を行う可能性があります。</p>
+<p class="p1">折り返し連絡先：${$("schoolPhone").value || "（学校電話）"}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>copyText(msg);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- new incident (clear)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnNewIncident").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const ok = confirm("新規対応として記録をリセットします。\n（学校設定は残ります）\nよろしいですか？");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!ok) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>localStorage.removeItem(KEY_INCIDENT);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>incidentStartAt = null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>lastDeleted = null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("place").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pName").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pGrade").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pSex").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pBirth").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("symptom").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pHistory").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pAllergy").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>computedAgeStr = "--";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("ageDisplay").innerText = `年齢：${computedAgeStr} 歳`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("voiceInputArea").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>refreshTimeline();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("新規として開始できます");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- settings save/reset</p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnSaveSettings").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const settings = {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>schoolName: $("schoolName").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>schoolAddr: $("schoolAddr").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>schoolPhone: $("schoolPhone").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>guardianPhone: $("guardianPhone").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>responder: $("responder").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>recorder: $("recorder").value,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("設定を保存しました");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>haptic(12);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>updateGuardianLink();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>persistIncident();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>$("btnResetSettings").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const ok = confirm("学校・連絡の設定を消去します。よろしいですか？");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!ok) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>localStorage.removeItem(KEY_SETTINGS);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>["schoolName","schoolAddr","schoolPhone","guardianPhone","responder","recorder"].forEach(id=&gt; $(id).value="");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>updateGuardianLink();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>persistIncident();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>toast("設定を消去しました");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function loadSettings(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const saved = localStorage.getItem(KEY_SETTINGS);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!saved) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const s = JSON.parse(saved);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("schoolName").value = s.schoolName || "";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("schoolAddr").value = s.schoolAddr || "";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("schoolPhone").value = s.schoolPhone || "";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("guardianPhone").value = s.guardianPhone || "";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("responder").value = s.responder || "";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>$("recorder").value = s.recorder || "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}catch(e){}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- incident persistence (autosave)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function loadIncidentRaw(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const saved = localStorage.getItem(KEY_INCIDENT);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!saved) return null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try { return JSON.parse(saved); } catch { return null; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function persistIncident(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const cur = loadIncidentRaw() || {};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cur.meta = {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>updatedAt: Date.now(),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>startAt: incidentStartAt,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cur.form = {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>place: $("place").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pName: $("pName").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pGrade: $("pGrade").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pSex: $("pSex").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pBirth: $("pBirth").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>symptom: $("symptom").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pHistory: $("pHistory").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pAllergy: $("pAllergy").value,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>computedAgeStr,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// entries are managed separately in setEntries/getEntries but keep consistent</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!cur.entries) cur.entries = [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>localStorage.setItem(KEY_INCIDENT, JSON.stringify(cur));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>let autosaveTimer = null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function scheduleAutosave(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>clearTimeout(autosaveTimer);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>autosaveTimer = setTimeout(()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>persistIncident();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}, 250);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function loadIncident(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const obj = loadIncidentRaw();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!obj) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const form = obj.form || {};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("place").value = form.place || "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pName").value = form.pName || "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pGrade").value = form.pGrade || "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pSex").value = form.pSex || "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pBirth").value = form.pBirth || "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("symptom").value = form.symptom || "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pHistory").value = form.pHistory || "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("pAllergy").value = form.pAllergy || "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>computedAgeStr = form.computedAgeStr || "--";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$("ageDisplay").innerText = `年齢：${computedAgeStr}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>incidentStartAt = obj.meta?.startAt || null;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// restore entries if present</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(Array.isArray(obj.entries)){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>localStorage.setItem(KEY_INCIDENT, JSON.stringify(obj)); // keep as-is</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- inputs listeners</p>
+<p class="p1"><span class="Apple-converted-space">  </span>["pBirth","pGrade"].forEach(id=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>$(id).addEventListener("change", ()=&gt;{ updateAge(); scheduleAutosave(); });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll("input, textarea, select").forEach(el=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el.addEventListener("input", ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>updateGuardianLink();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>scheduleAutosave();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---- init</p>
+<p class="p1"><span class="Apple-converted-space">  </span>loadSettings();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>loadIncident();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>updateGuardianLink();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ensure entries exist in incident storage</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const raw = loadIncidentRaw();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(raw &amp;&amp; Array.isArray(raw.entries)){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// ok</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const base = raw || {};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>base.entries = [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>localStorage.setItem(KEY_INCIDENT, JSON.stringify(base));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>refreshTimeline();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>buildScript();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>tickElapsed();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// step default</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setStepActive(1);</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
