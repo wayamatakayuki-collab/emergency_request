@@ -3,1991 +3,1280 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>救急対応サポート（学校配布・勝ち切り v13）</title>
+  <title>救急要請サポート（現場最強 v13）</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
     body{
-      -webkit-tap-highlight-color:transparent;
-      padding-bottom: 170px;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: 92px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     .safe-area-bottom{ padding-bottom: env(safe-area-inset-bottom); }
-    input,select,textarea{ min-height:48px; }
+
+    input, select, textarea{ min-height: 48px; }
     select{
-      appearance:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-      background-repeat:no-repeat;
-      background-position:right .75rem center;
-      background-size:1rem;
-      padding-right:2.5rem!important;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1rem;
+      padding-right: 2.5rem !important;
     }
-    .input-label{
-      font-size:.75rem;font-weight:900;color:#64748b;margin-bottom:.25rem;display:block;letter-spacing:.02em;
+
+    .quick-tag{
+      transition: all 0.1s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      min-height: 44px;
+      display:flex; align-items:center; justify-content:center;
+      text-align:center;
+      padding: 10px 10px;
+      line-height: 1.2;
+      user-select:none;
     }
-    .chip{
-      transition:all .12s;
-      box-shadow:0 1px 2px rgba(0,0,0,.05);
-      min-height:44px;
-      display:flex;align-items:center;justify-content:center;
-      text-align:center;padding:10px 8px;line-height:1.2;user-select:none;
+    .quick-tag:active{ transform: scale(0.96); filter: brightness(0.92); }
+
+    .collapse-content{ max-height: 0; overflow:hidden; transition: max-height .28s ease-out; }
+    .collapse-content.open{ max-height: 1400px; transition: max-height .45s ease-in; }
+
+    .recording-ring{ animation: ring-pulse 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite; }
+    @keyframes ring-pulse{
+      0% { transform: scale(1); opacity: 0.55; }
+      100% { transform: scale(1.55); opacity: 0; }
     }
-    .chip:active{ transform:scale(.97); filter:brightness(.95); }
-    .collapse-content{ max-height:0; overflow:hidden; transition:max-height .35s ease-out; }
-    .collapse-content.open{ max-height:3600px; transition:max-height .5s ease-in; }
-    .recording-ring{ animation:ring-pulse 1.5s cubic-bezier(.24,0,.38,1) infinite; }
-    @keyframes ring-pulse{ 0%{transform:scale(1);opacity:.5} 100%{transform:scale(1.5);opacity:0} }
-    .toast{
-      position:fixed;left:50%;transform:translateX(-50%);
-      bottom:190px;z-index:60;background:rgba(15,23,42,.92);color:#fff;
-      padding:10px 14px;border-radius:999px;font-weight:900;font-size:12px;
-      box-shadow:0 10px 25px rgba(0,0,0,.25);
-      opacity:0;pointer-events:none;transition:opacity .18s ease;
-      max-width:calc(100vw - 24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-    .toast.show{ opacity:1; }
-    .pb-safe{ padding-bottom: env(safe-area-inset-bottom); }
 
     @media print{
-      .no-print{ display:none!important; }
-      body{ background:#fff!important; padding:0!important; }
-      main{ padding:0!important; }
-      #printArea{ display:block!important; }
-      #printArea *{ color:#000!important; }
-      .print-section{ break-inside:avoid; }
-      .print-row{ border-bottom:1px solid #bbb; padding:6px 0; }
+      .no-print{ display:none !important; }
+      body{ background:#fff !important; padding:0 !important; }
+      .print-report{ display:block !important; padding:18px !important; color:#000; }
+      .timeline-item{ border-bottom: 1px solid #ccc !important; break-inside: avoid; }
     }
-    #printArea{ display:none; }
+    .print-report{ display:none; }
   </style>
 </head>
 
 <body class="bg-slate-100 text-slate-900">
 
-  <!-- PRINT -->
-  <section id="printArea" class="p-5">
-    <div class="flex items-end justify-between border-b-2 border-black pb-2 mb-4">
+  <!-- ===================== PRINT REPORT (hidden) ===================== -->
+  <div class="print-report">
+    <div class="border-b-2 border-black pb-2 mb-4 flex justify-between items-end">
       <div>
-        <h1 class="text-2xl font-black">救急搬送・経過記録用紙</h1>
-        <div class="text-xs font-bold text-gray-600">（端末内で作成・記録）</div>
+        <h1 class="text-2xl font-bold">救急搬送・経過記録用紙</h1>
+        <div class="text-xs text-gray-600 mt-1">（現場最強 v13 / 端末ローカル記録）</div>
       </div>
-      <div class="text-sm font-bold" id="printTimestamp"></div>
+      <p id="printTimestamp" class="text-sm"></p>
     </div>
 
-    <div class="grid grid-cols-2 gap-3 border p-3 rounded-lg mb-3 print-section">
+    <div class="grid grid-cols-2 gap-3 mb-4 border p-3 rounded-lg">
       <div>
-        <div class="text-[10px] font-black text-gray-600">学校名</div>
-        <div id="p_schoolName" class="text-sm font-bold"></div>
+        <p class="text-xs font-bold text-gray-500">学校名 / 住所 / 電話</p>
+        <p id="printSchoolInfo" class="text-sm font-bold"></p>
       </div>
       <div>
-        <div class="text-[10px] font-black text-gray-600">住所 / 電話</div>
-        <div id="p_schoolAddrPhone" class="text-sm font-bold"></div>
+        <p class="text-xs font-bold text-gray-500">発生 / 終了 / 経過</p>
+        <p id="printIncidentInfo" class="text-sm font-bold"></p>
       </div>
+
       <div class="col-span-2 border-t pt-2">
-        <div class="text-[10px] font-black text-gray-600">発生場所（校内）</div>
-        <div id="p_place" class="text-sm font-bold"></div>
+        <p class="text-xs font-bold text-gray-500">傷病者（氏名 / 学年 / 性別 / 年齢）</p>
+        <p id="printPatientInfo" class="text-sm font-bold"></p>
       </div>
-    </div>
 
-    <div class="grid grid-cols-2 gap-3 border p-3 rounded-lg mb-3 print-section">
-      <div>
-        <div class="text-[10px] font-black text-gray-600">傷病者（氏名）</div>
-        <div id="p_name" class="text-sm font-bold"></div>
-      </div>
-      <div>
-        <div class="text-[10px] font-black text-gray-600">学年 / 性別 / 年齢</div>
-        <div id="p_gradeSexAge" class="text-sm font-bold"></div>
-      </div>
       <div class="col-span-2 border-t pt-2">
-        <div class="text-[10px] font-black text-gray-600">主訴・症状 / 既往 / アレルギー</div>
-        <div id="p_med" class="text-sm"></div>
+        <p class="text-xs font-bold text-gray-500">現在の主な症状・既往歴・アレルギー</p>
+        <p id="printMedicalInfo" class="text-sm"></p>
+      </div>
+
+      <div class="col-span-2 border-t pt-2">
+        <p class="text-xs font-bold text-gray-500">初動チェック状況</p>
+        <div id="printChecklist" class="text-sm"></div>
       </div>
     </div>
 
-    <div class="border p-3 rounded-lg mb-3 print-section">
-      <div class="text-[10px] font-black text-gray-600 mb-1">学校固有（AED / 導線 / 内線など）</div>
-      <div id="p_schoolOps" class="text-sm"></div>
+    <h2 class="text-lg font-bold border-l-4 border-black pl-2 mb-2">時系列記録</h2>
+    <div id="printTimeline" class="border-t border-black"></div>
+
+    <div class="mt-6 text-[10px] text-gray-400 text-right">
+      Generated by 救急要請サポート（現場最強 v13）
     </div>
+  </div>
 
-    <div class="border p-3 rounded-lg mb-3 print-section">
-      <div class="text-[10px] font-black text-gray-600 mb-1">役割分担（確定したもの）</div>
-      <div id="p_roles" class="text-sm"></div>
-    </div>
-
-    <div class="border p-3 rounded-lg mb-3 print-section">
-      <div class="text-[10px] font-black text-gray-600 mb-1">初動チェック（完了したもの）</div>
-      <div id="p_checklist" class="text-sm"></div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-3 border p-3 rounded-lg mb-3 print-section">
-      <div>
-        <div class="text-[10px] font-black text-gray-600">開始</div>
-        <div id="p_start" class="text-sm font-bold"></div>
-      </div>
-      <div>
-        <div class="text-[10px] font-black text-gray-600">終了</div>
-        <div id="p_end" class="text-sm font-bold"></div>
-      </div>
-    </div>
-
-    <div class="border-t-2 border-black pt-2 mb-2 print-section">
-      <h2 class="text-lg font-black">時系列記録</h2>
-      <div class="text-[10px] font-bold text-gray-600 mb-1">※押した順に記録</div>
-      <div id="p_timeline" class="border-t border-black"></div>
-    </div>
-
-    <div class="mt-6 text-[10px] text-gray-400 text-right">Generated by 救急対応サポート v13</div>
-  </section>
-
-  <!-- HEADER -->
-  <header class="sticky top-0 z-40 bg-white shadow-sm border-b no-print">
+  <!-- ===================== HEADER ===================== -->
+  <header class="sticky top-0 z-30 bg-white shadow-sm border-b no-print">
     <div class="px-4 py-3 flex items-center justify-between gap-3">
-      <div class="min-w-0">
-        <h1 class="text-base font-black leading-tight text-red-600 truncate">救急対応サポート</h1>
-        <div class="text-[10px] text-slate-500 font-black">学校固有設定 + 初動チェック（校別） + 通報原稿 + 記録 + 全件ビュー + 引継ぎ（端末内保存）</div>
+      <div class="flex flex-col">
+        <h1 class="text-base font-black leading-tight text-red-600">救急要請サポート</h1>
+        <div class="text-[10px] text-slate-400 font-bold">現場最強 v13（ケース10＋初動チェック10＋全件ビュー）</div>
       </div>
+
       <div class="flex items-center gap-2">
-        <button id="btnNewIncident" class="px-3 py-2 rounded-full text-xs font-black border border-slate-200 bg-slate-50 active:bg-slate-100">新規</button>
+        <button id="btnOpenSettings" class="px-3 py-2 rounded-full border text-xs font-black text-slate-700 active:bg-slate-50">
+          設定
+        </button>
         <a href="tel:119" class="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-black flex items-center gap-2 animate-pulse">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
           119
         </a>
       </div>
     </div>
-
-    <div class="px-3 pb-2">
-      <div class="bg-slate-50 border rounded-2xl p-2 flex items-center gap-2 overflow-x-auto">
-        <button class="stepBtn px-3 py-2 rounded-xl text-xs font-black bg-white border" data-step="1">①初動</button>
-        <button class="stepBtn px-3 py-2 rounded-xl text-xs font-black bg-white border" data-step="2">②通報</button>
-        <button class="stepBtn px-3 py-2 rounded-xl text-xs font-black bg-white border" data-step="3">③記録</button>
-        <button class="stepBtn px-3 py-2 rounded-xl text-xs font-black bg-white border" data-step="4">④引継ぎ</button>
-
-        <div class="ml-auto flex items-center gap-2 pr-1">
-          <div id="stateBadge" class="px-2 py-1 rounded-full bg-slate-200 text-slate-800 text-[10px] font-black">未開始</div>
-          <div id="rolesBadge" class="px-2 py-1 rounded-full bg-white border text-slate-800 text-[10px] font-black">役割:0</div>
-          <div id="elapsedBadge" class="px-2 py-1 rounded-full bg-slate-900 text-white text-[10px] font-black">--:--</div>
-        </div>
-      </div>
-    </div>
   </header>
 
+  <!-- ===================== MAIN ===================== -->
   <main class="p-3 space-y-4 no-print">
 
-    <!-- STATUS CARD -->
-    <section class="bg-white border rounded-2xl p-4 shadow-sm">
-      <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-          <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </div>
-        <div class="min-w-0 flex-1">
-          <div class="font-black text-sm text-slate-900">現在の状態</div>
-          <div class="text-xs text-slate-600 font-bold mt-1">
-            状態：<span id="stateInline" class="font-black">未開始</span>
-            ／ 経過：<span id="elapsedInline" class="font-black">--:--</span>
-            ／ 記録：<span id="countInline" class="font-black">0</span>件
-          </div>
-          <div class="mt-2 bg-slate-50 border rounded-2xl p-3">
-            <div class="text-[10px] font-black text-slate-500">最新記録</div>
-            <div id="latestInline" class="text-sm font-black text-slate-900 truncate">（記録なし）</div>
-          </div>
-        </div>
-      </div>
+    <!-- ===================== SECTION 1 ===================== -->
+    <div id="section1" class="space-y-4">
 
-      <div class="grid grid-cols-2 gap-2 mt-3">
-        <button id="btnMarkStart" class="py-4 rounded-2xl bg-slate-900 text-white font-black text-sm active:scale-[0.99]">⏱ 発生（開始）を記録</button>
-        <button id="btnMarkEnd" class="py-4 rounded-2xl bg-white border font-black text-sm active:bg-slate-50">⏹ 停止（終了）を記録</button>
-      </div>
-
-      <div class="grid grid-cols-3 gap-2 mt-3">
-        <button id="btnOpenRoleBoard" class="py-4 rounded-2xl bg-white border font-black text-sm active:bg-slate-50">🧩 役割</button>
-        <button id="btnOpenQuickSheet" class="py-4 rounded-2xl bg-blue-600 text-white font-black text-sm active:scale-[0.99]">⚡ すぐ記録</button>
-        <button id="btnOpenLogViewer" class="py-4 rounded-2xl bg-slate-900 text-white font-black text-sm active:scale-[0.99]">👀 全件</button>
-      </div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section class="bg-white border rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="flex items-center justify-between">
-        <h2 class="font-black text-sm border-l-4 border-slate-900 pl-2">学校固有の初期設定（各校で保存）</h2>
-        <button id="btnToggleSettings" class="text-xs font-black text-blue-600">開く</button>
-      </div>
-
-      <div id="settingsPanel" class="hidden space-y-4 bg-slate-50 p-3 rounded-2xl border border-dashed border-slate-200">
-
-        <div class="bg-white border rounded-2xl p-3 space-y-3">
-          <div class="font-black text-sm">学校情報</div>
-          <div>
-            <label class="input-label">学校名</label>
-            <input id="schoolName" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="〇〇市立〇〇小学校" />
-          </div>
-          <div>
-            <label class="input-label">住所</label>
-            <input id="schoolAddr" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="市区町村からの住所" />
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="input-label">学校電話</label>
-              <input id="schoolPhone" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="03-xxxx-xxxx" inputmode="tel" />
-            </div>
-            <div>
-              <label class="input-label">GoogleマップURL（正門/玄関ピン）</label>
-              <input id="mapUrl" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="https://maps.google.com/..." inputmode="url" />
+      <div class="bg-white border rounded-2xl p-3 shadow-sm">
+        <div class="flex items-start gap-3">
+          <div class="shrink-0 mt-0.5 w-9 h-9 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black">!</div>
+          <div class="flex-1">
+            <div class="font-black text-sm">このアプリは「端末内（ローカル）」にのみ保存されます</div>
+            <div class="text-[11px] text-slate-600 font-bold mt-0.5">
+              通信しません（クラウド送信なし）。必要なら <span class="text-slate-900">共有ボタン</span> で文章として送れます。
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="bg-white border rounded-2xl p-3 space-y-3">
-          <div class="font-black text-sm">緊急導線・AED（勝ち切りポイント）</div>
-          <div class="grid grid-cols-1 gap-3">
-            <div>
-              <label class="input-label">救急車の導線</label>
-              <input id="ambulanceRoute" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：正門→体育館横→保健室前" />
+      <!-- 発生場所 -->
+      <div class="bg-white rounded-2xl shadow-sm border p-4 space-y-3">
+        <div class="flex justify-between items-center border-b pb-2 mb-2">
+          <h2 class="font-black text-sm border-l-4 border-slate-800 pl-2 text-slate-800">1. 発生場所</h2>
+          <button onclick="toggleCollapse('schoolPanel')" class="text-xs text-blue-600 font-black">学校情報</button>
+        </div>
+
+        <div id="schoolPanel" class="hidden space-y-3 bg-slate-50 p-3 rounded-xl border border-dashed border-slate-200">
+          <div><label class="text-[11px] font-black text-slate-500">学校名</label><input id="schoolName" class="w-full p-3 border rounded-xl text-sm font-black bg-white" placeholder="〇〇市立〇〇小学校" /></div>
+          <div><label class="text-[11px] font-black text-slate-500">住所</label><input id="schoolAddr" class="w-full p-3 border rounded-xl text-sm font-black bg-white" placeholder="市区町村からの住所" /></div>
+          <div><label class="text-[11px] font-black text-slate-500">電話番号</label><input id="schoolPhone" class="w-full p-3 border rounded-xl text-sm font-black bg-white" placeholder="03-xxxx-xxxx" inputmode="tel" /></div>
+
+          <!-- よく起きるケース（最大10） -->
+          <div class="bg-white border rounded-2xl p-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="font-black text-sm">よく起きるケース（最大10）</div>
+              <div class="text-[10px] font-black text-slate-500">学校ごとに設定</div>
             </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="input-label">AED設置①</label>
-                <input id="aed1" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：職員室前" />
-              </div>
-              <div>
-                <label class="input-label">AED設置②</label>
-                <input id="aed2" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：体育館入口" />
-              </div>
+            <div class="grid grid-cols-1 gap-2">
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="0" />
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="1" />
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="2" />
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="3" />
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="4" />
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="5" />
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="6" />
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="7" />
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="8" />
+              <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="9" />
             </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="input-label">正門の呼び名</label>
-                <input id="gateName" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：正門 / 北門" />
-              </div>
-              <div>
-                <label class="input-label">正門の誘導待機場所</label>
-                <input id="gateSpot" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：門を入ってすぐ右" />
-              </div>
+            <div class="grid grid-cols-2 gap-2 mt-2">
+              <button id="btnRestoreDefaultCases" class="py-3 rounded-2xl bg-white border text-xs font-black">初期セットに戻す</button>
+              <button id="btnClearCases" class="py-3 rounded-2xl bg-white border text-xs font-black">空にする</button>
             </div>
+          </div>
+
+          <!-- 初動チェック（最大10） -->
+          <div class="bg-white border rounded-2xl p-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="font-black text-sm">初動チェック（最大10）</div>
+              <div class="text-[10px] font-black text-slate-500">チェックで自動記録</div>
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="0" />
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="1" />
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="2" />
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="3" />
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="4" />
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="5" />
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="6" />
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="7" />
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="8" />
+              <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="9" />
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-2">
+              <button id="btnRestoreDefaultChecks" class="py-3 rounded-2xl bg-white border text-xs font-black">初期セットに戻す</button>
+              <button id="btnClearChecks" class="py-3 rounded-2xl bg-white border text-xs font-black">空にする</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button id="btnSaveSettings" class="py-4 bg-slate-900 text-white text-sm rounded-2xl font-black active:scale-[0.99]">このスマホに保存</button>
+            <button id="btnExportSettings" class="py-4 bg-white border text-sm rounded-2xl font-black active:bg-slate-50">設定を共有</button>
+          </div>
+
+          <div class="text-[11px] text-slate-500 font-bold">
+            ※「設定を共有」は、他校へ配布する時に便利（文章として送れます）
           </div>
         </div>
 
-        <div class="bg-white border rounded-2xl p-3 space-y-3">
-          <div class="font-black text-sm">内線・担当（任意）</div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="input-label">職員室 内線</label>
-              <input id="extStaff" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：100" inputmode="numeric" />
-            </div>
-            <div>
-              <label class="input-label">保健室 内線</label>
-              <input id="extNurse" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：101" inputmode="numeric" />
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="input-label">管理職 内線</label>
-              <input id="extAdmin" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：102" inputmode="numeric" />
-            </div>
-            <div>
-              <label class="input-label">養護教諭（名前）</label>
-              <input id="nurseName" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：〇〇先生" />
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="input-label">管理職 携帯（任意）</label>
-              <input id="adminMobile" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：090-xxxx-xxxx" inputmode="tel" />
-            </div>
-            <div>
-              <label class="input-label">保護者連絡（任意）</label>
-              <input id="guardianPhone" class="w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="例：090-xxxx-xxxx" inputmode="tel" />
-            </div>
-          </div>
-        </div>
-
-        <!-- CASE PRESETS -->
-        <div class="bg-white border rounded-2xl p-3 space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="font-black text-sm text-slate-900">よく起きるケース（最大10）</div>
-            <div class="text-[10px] font-black text-slate-500">初期セット入り</div>
-          </div>
-          <div class="grid grid-cols-1 gap-2">
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="0" />
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="1" />
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="2" />
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="3" />
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="4" />
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="5" />
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="6" />
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="7" />
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="8" />
-            <input class="casePreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="9" />
-          </div>
-          <div class="grid grid-cols-2 gap-2 mt-2">
-            <button id="btnRestoreDefaultCases" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50">初期セットに戻す</button>
-            <button id="btnClearCases" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50">ケースを空にする</button>
-          </div>
-        </div>
-
-        <!-- CHECKLIST PRESETS (NEW) -->
-        <div class="bg-white border rounded-2xl p-3 space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="font-black text-sm text-slate-900">初動チェック（最大10）</div>
-            <div class="text-[10px] font-black text-slate-500">学校ごとに設定</div>
-          </div>
-          <div class="grid grid-cols-1 gap-2">
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="0" />
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="1" />
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="2" />
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="3" />
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="4" />
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="5" />
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="6" />
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="7" />
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="8" />
-            <input class="checkPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="9" />
-          </div>
-          <div class="grid grid-cols-2 gap-2 mt-2">
-            <button id="btnRestoreDefaultChecks" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50">初期セットに戻す</button>
-            <button id="btnClearChecks" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50">チェックを空にする</button>
-          </div>
-          <div class="text-[10px] font-bold text-slate-500">
-            ※保存後に反映（チェック項目が変わると、既存のチェック状態は項目名で追従します）
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <button id="btnSaveSettings" class="py-4 rounded-2xl bg-slate-900 text-white text-sm font-black active:scale-[0.99]">この端末に保存</button>
-          <button id="btnResetSettings" class="py-4 rounded-2xl bg-white border text-sm font-black active:bg-slate-50">設定を消去</button>
-        </div>
-
-        <div class="text-[10px] font-bold text-slate-500">
-          ※設定は端末内（localStorage）に保存。サーバ送信はしません。
-        </div>
-      </div>
-
-      <div>
-        <label class="input-label">校内の詳しい場所（発生場所）</label>
-        <input id="place" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" placeholder="例：3F図工室、体育館北側など" />
-      </div>
-
-      <!-- SCHOOL QUICK ACTIONS -->
-      <div class="grid grid-cols-2 gap-2">
-        <button id="btnOpenMap" class="py-4 rounded-2xl bg-white border font-black text-sm active:bg-slate-50">🗺 地図</button>
-        <button id="btnCopySchoolOps" class="py-4 rounded-2xl bg-slate-900 text-white font-black text-sm active:scale-[0.99]">📌 学校固有情報をコピー</button>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <a id="btnCallAdmin" href="#" class="py-4 rounded-2xl bg-white border font-black text-sm flex items-center justify-center active:bg-slate-50">📞 管理職へ電話</a>
-        <a id="btnCallSchool" href="#" class="py-4 rounded-2xl bg-white border font-black text-sm flex items-center justify-center active:bg-slate-50">📞 学校へ電話</a>
-      </div>
-    </section>
-
-    <!-- 初動チェックリスト（校別・最大10） -->
-    <section class="bg-white border rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="flex items-center justify-between">
-        <h2 class="font-black text-sm border-l-4 border-emerald-600 pl-2">初動チェック（チェックで自動記録）</h2>
-        <button id="btnChecklistSettingsHint" class="text-xs font-black text-blue-600">設定</button>
-      </div>
-      <div class="text-[10px] font-bold text-slate-500">※学校ごとのチェックを反映（最大10）</div>
-
-      <div id="checklist" class="space-y-2"></div>
-
-      <div class="grid grid-cols-2 gap-2">
-        <button id="btnChecklistReset" class="py-4 rounded-2xl bg-white border font-black text-sm active:bg-slate-50">チェック解除</button>
-        <button id="btnCopyChecklist" class="py-4 rounded-2xl bg-slate-900 text-white font-black text-sm active:scale-[0.99]">チェック状況コピー</button>
-      </div>
-    </section>
-
-    <!-- PATIENT -->
-    <section class="bg-white border rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-black text-sm border-l-4 border-red-500 pl-2">傷病者情報</h2>
-
-      <div class="space-y-3">
         <div>
-          <label class="input-label">氏名（ふりがな）</label>
-          <input id="pName" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" placeholder="山田 太郎（やまだ たろう）" />
+          <label class="text-[11px] font-black text-slate-500">校内の詳しい場所</label>
+          <input id="place" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" placeholder="例：3F図工室、体育館北側など" />
+        </div>
+      </div>
+
+      <!-- 傷病者 -->
+      <div class="bg-white rounded-2xl shadow-sm border p-4 space-y-4">
+        <h2 class="font-black text-sm border-l-4 border-red-500 pl-2 text-slate-800">2. 傷病者の詳細</h2>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="text-[11px] font-black text-slate-500">よく起きるケース（タップで症状へ反映＋記録）</div>
+            <button id="btnCasesHint" class="text-xs font-black text-blue-600">設定</button>
+          </div>
+          <div id="caseButtons" class="grid grid-cols-2 gap-2"></div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="space-y-3">
           <div>
-            <label class="input-label">学年・区分</label>
-            <select id="pGrade" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black">
-              <option value="">選択</option>
-              <option value="1">1年</option><option value="2">2年</option><option value="3">3年</option>
-              <option value="4">4年</option><option value="5">5年</option><option value="6">6年</option>
-              <option value="職員">教職員</option><option value="他">その他</option>
-            </select>
+            <label class="text-[11px] font-black text-slate-500">氏名（ふりがな）</label>
+            <input id="pName" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black placeholder:font-bold placeholder:text-slate-400" placeholder="山田 太郎（やまだ たろう）" />
           </div>
-          <div>
-            <label class="input-label">性別</label>
-            <select id="pSex" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black">
-              <option value="">選択</option>
-              <option value="男性">男性</option>
-              <option value="女性">女性</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 bg-blue-50 rounded-2xl border border-blue-100">
-          <div>
-            <label class="input-label text-blue-800">生年月日（任意）</label>
-            <input id="pBirth" type="date" class="w-full p-3 border rounded-xl text-sm bg-white font-black" />
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[11px] font-black text-slate-500">学年・区分</label>
+              <select id="pGrade" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black">
+                <option value="">選択</option>
+                <option value="1">1年</option><option value="2">2年</option><option value="3">3年</option>
+                <option value="4">4年</option><option value="5">5年</option><option value="6">6年</option>
+                <option value="職員">教職員</option><option value="他">その他</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-black text-slate-500">性別</label>
+              <select id="pSex" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black">
+                <option value="">選択</option>
+                <option value="男性">男性</option>
+                <option value="女性">女性</option>
+                <option value="不明">不明</option>
+              </select>
+            </div>
           </div>
-          <div class="flex items-end">
-            <div id="ageDisplay" class="w-full p-3 rounded-xl bg-white border border-blue-200 text-sm font-black text-blue-900 text-center h-[48px] flex items-center justify-center shadow-sm">
-              年齢：-- 歳
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+            <div>
+              <label class="text-[11px] font-black text-blue-700">生年月日</label>
+              <input id="pBirth" type="date" class="w-full p-3 border rounded-xl text-sm font-black bg-white" />
+            </div>
+            <div class="flex items-end">
+              <div id="ageDisplay" class="text-sm font-black text-blue-800 bg-white border border-blue-200 w-full p-3 rounded-xl text-center h-[48px] flex items-center justify-center shadow-sm">
+                年齢：-- 歳
+              </div>
             </div>
           </div>
         </div>
 
         <div>
-          <label class="input-label">主な症状（短くOK）</label>
-          <textarea id="symptom" class="w-full p-3 bg-slate-50 border rounded-2xl text-sm font-black" rows="2" placeholder="例：呼吸苦、意識もうろう、全身じんましん 等"></textarea>
+          <label class="text-[11px] font-black text-slate-500">現在の症状</label>
+          <textarea id="symptom" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" rows="2"
+            placeholder="例：アレルギー反応、呼吸困難、意識混濁"></textarea>
         </div>
 
-        <button id="btnToggleMedical" class="w-full py-3 bg-slate-100 rounded-2xl text-[11px] font-black text-slate-600 flex justify-center items-center gap-2">
-          既往歴・アレルギー等（必要なら）
-          <svg id="iconMedical" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        <button onclick="toggleCollapse('detailMedical')" class="w-full py-3 bg-slate-100 rounded-xl text-[11px] font-black text-slate-600 flex justify-center items-center gap-1">
+          既往歴・アレルギー等
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
         </button>
-        <div id="medicalPanel" class="collapse-content bg-white">
-          <div class="pt-3 space-y-3">
-            <div>
-              <label class="input-label">既往歴（持病）</label>
-              <input id="pHistory" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" placeholder="喘息、てんかん 等" />
-            </div>
-            <div>
-              <label class="input-label">アレルギー</label>
-              <input id="pAllergy" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" placeholder="卵、ピーナッツ 等" />
-            </div>
-          </div>
-        </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <a id="btnCallGuardian" href="#" class="py-4 rounded-2xl bg-white border text-sm font-black flex items-center justify-center gap-2 active:bg-slate-50">
-            📞 保護者へ電話
-          </a>
-          <button id="btnCopyGuardianMsg" class="py-4 rounded-2xl bg-slate-900 text-white text-sm font-black active:scale-[0.99]">
-            ✉️ 連絡文をコピー
-          </button>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <button id="btnCopyBroadcast" class="py-4 rounded-2xl bg-white border font-black text-sm active:bg-slate-50">📢 校内放送文</button>
-          <button id="btnCopyGuardianTransport" class="py-4 rounded-2xl bg-slate-700 text-white font-black text-sm active:scale-[0.99]">🚑 搬送連絡文</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- CALL SCRIPT -->
-    <section class="bg-slate-900 rounded-2xl p-4 shadow-xl space-y-3">
-      <div class="flex items-center justify-between border-b border-white/10 pb-2">
-        <div>
-          <div class="text-[10px] uppercase tracking-widest text-slate-400 font-black">119通報用 原稿</div>
-          <div class="text-[10px] text-slate-500 font-black">入力に応じて自動生成</div>
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="btnCopyScript" class="text-xs bg-white text-slate-900 px-3 py-2 rounded-full font-black active:bg-slate-200">コピー</button>
-          <button id="btnShareScript" class="text-xs bg-slate-700 text-white px-3 py-2 rounded-full font-black active:bg-slate-600">共有</button>
-        </div>
-      </div>
-      <div id="scriptDisplay" class="text-white text-sm font-medium leading-relaxed min-h-[120px] whitespace-pre-wrap"></div>
-    </section>
-
-    <!-- LOG -->
-    <section class="bg-white border rounded-2xl p-4 shadow-sm space-y-4" id="logSection">
-      <div class="flex items-center justify-between">
-        <div class="text-center flex-1">
-          <h2 class="font-black text-slate-900">経過・処置の記録</h2>
-          <p class="text-[10px] text-slate-500 font-black uppercase tracking-tight">Tap to Log / Voice / Edit</p>
-        </div>
-        <button id="btnOpenLogViewer2" class="px-3 py-2 rounded-full bg-slate-900 text-white text-xs font-black active:scale-[0.99]">全件</button>
-      </div>
-
-      <!-- VOICE -->
-      <div class="flex flex-col items-center py-2">
-        <div class="relative">
-          <div id="pulseRing" class="absolute inset-0 rounded-full bg-red-400 hidden recording-ring"></div>
-          <button id="btnVoiceRec" class="relative z-10 w-20 h-20 rounded-full bg-blue-600 text-white shadow-lg flex items-center justify-center flex-col gap-0.5 active:scale-95 transition-transform">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-18a3 3 0 013 3v8a3 3 0 01-3 3 3 3 0 01-3-3V5a3 3 0 013-3z"></path></svg>
-            <span id="micText" class="text-[9px] font-black tracking-tighter uppercase">REC START</span>
-          </button>
-        </div>
-        <div id="interimText" class="mt-2 text-xs text-blue-600 font-black h-4 italic"></div>
-        <div id="voiceHint" class="text-[10px] text-slate-500 font-bold mt-1">※対応端末のみ音声入力できます</div>
-      </div>
-
-      <div class="space-y-2">
-        <textarea id="voiceInputArea" class="w-full p-4 bg-slate-50 border rounded-2xl text-base font-black focus:ring-2 focus:ring-blue-500 outline-none" rows="2" placeholder="自由入力（例：○○で転倒、膝を打撲。冷却開始 など）"></textarea>
-        <div class="grid grid-cols-2 gap-2">
-          <button id="btnAddTimeline" class="w-full py-4 bg-slate-900 text-white font-black rounded-2xl shadow-lg active:scale-[0.98]">＋ 記録</button>
-          <button id="btnUndo" class="w-full py-4 bg-white border font-black rounded-2xl active:bg-slate-50">↩ 取り消し</button>
+        <div id="detailMedical" class="hidden space-y-3 pt-1">
+          <div><label class="text-[11px] font-black text-slate-500">既往歴（持病）</label><input id="pHistory" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" placeholder="喘息、てんかん等" /></div>
+          <div><label class="text-[11px] font-black text-slate-500">アレルギー</label><input id="pAllergy" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" placeholder="ピーナッツ、卵等" /></div>
         </div>
       </div>
 
-      <div class="pt-2">
-        <div class="flex items-center justify-between">
-          <h3 class="text-[11px] font-black text-slate-500 uppercase tracking-widest">Activity Log</h3>
+      <!-- 通報用原稿 -->
+      <div class="bg-slate-900 rounded-2xl p-4 shadow-xl">
+        <div class="flex justify-between items-center mb-2 border-b border-white/10 pb-2">
+          <span class="text-[10px] uppercase tracking-widest text-slate-400 font-black">119通報用原稿</span>
           <div class="flex items-center gap-2">
-            <button id="btnCopyTimeline" class="px-3 py-2 text-slate-600 text-xs font-black border rounded-full active:bg-slate-50">コピー</button>
-            <button id="btnExportTxt" class="px-3 py-2 text-slate-600 text-xs font-black border rounded-full active:bg-slate-50">TXT</button>
-            <button id="btnExportJson" class="px-3 py-2 text-slate-600 text-xs font-black border rounded-full active:bg-slate-50">JSON</button>
+            <button id="btnCopyScript" class="text-xs bg-white text-slate-900 px-3 py-2 rounded-full font-black active:bg-slate-200">コピー</button>
+            <button id="btnShareScript" class="text-xs bg-white/10 text-white px-3 py-2 rounded-full font-black active:bg-white/20">共有</button>
+          </div>
+        </div>
+        <div id="scriptDisplay" class="text-white text-sm font-bold leading-relaxed min-h-[120px] whitespace-pre-wrap"></div>
+      </div>
+    </div>
+
+    <!-- ===================== SECTION 2 ===================== -->
+    <div id="section2" class="hidden space-y-4 pb-24">
+
+      <!-- incident bar -->
+      <div class="bg-white border rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <div class="font-black text-sm">経過・処置の記録</div>
+            <div class="text-[10px] font-black text-slate-500">発生〜引継ぎまで「全部ここに」残す</div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="btnOpenLogViewer" class="px-3 py-2 rounded-full border text-xs font-black active:bg-slate-50">👀 全件</button>
           </div>
         </div>
 
-        <div id="timeline" class="space-y-2 mt-3">
-          <p id="timelineEmpty" class="text-center text-slate-400 py-10 text-sm font-bold">（記録なし）</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button id="btnStartIncident" class="py-4 rounded-2xl bg-red-600 text-white font-black text-sm active:scale-[0.99]">発生（開始）を記録</button>
+          <button id="btnStopIncident" class="py-4 rounded-2xl bg-white border font-black text-sm text-slate-900 active:bg-slate-50">終了を記録</button>
+          <button id="btnResetAll" class="py-4 rounded-2xl bg-white border font-black text-sm text-slate-900 active:bg-slate-50">全消去</button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-slate-50 border rounded-2xl p-3">
+            <div class="text-[10px] font-black text-slate-500">開始</div>
+            <div id="incidentStartLabel" class="text-sm font-black text-slate-900">--:--</div>
+          </div>
+          <div class="bg-slate-50 border rounded-2xl p-3">
+            <div class="text-[10px] font-black text-slate-500">経過</div>
+            <div id="incidentElapsedLabel" class="text-sm font-black text-slate-900">--</div>
+          </div>
+          <div class="bg-slate-50 border rounded-2xl p-3">
+            <div class="text-[10px] font-black text-slate-500">最新記録</div>
+            <div id="lastEntryLabel" class="text-sm font-black text-slate-900">--:--</div>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- HANDOFF -->
-    <section class="bg-white border rounded-2xl p-4 shadow-sm space-y-3" id="handoffSection">
-      <h2 class="font-black text-sm border-l-4 border-blue-600 pl-2">引継ぎ（印刷 / 共有 / Teams）</h2>
+      <!-- checklist -->
+      <section class="bg-white border rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="font-black text-sm border-l-4 border-emerald-600 pl-2">
+            初動チェック（チェックで自動記録）
+          </h2>
+          <button id="btnChecklistSettingsHint" class="text-xs font-black text-blue-600">設定</button>
+        </div>
 
-      <div class="grid grid-cols-2 gap-2">
-        <button id="btnPrint" class="py-4 bg-blue-600 text-white text-sm font-black rounded-2xl shadow-lg flex items-center justify-center gap-2 active:scale-95">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 00-2 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-          用紙として印刷
-        </button>
-        <button id="btnShareAll" class="py-4 bg-slate-900 text-white text-sm font-black rounded-2xl shadow-lg active:scale-95">共有（全文）</button>
+        <div id="checklist" class="space-y-2"></div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btnChecklistReset" class="py-4 rounded-2xl bg-white border font-black text-sm">チェック解除</button>
+          <button id="btnCopyChecklist" class="py-4 rounded-2xl bg-slate-900 text-white font-black text-sm">チェック状況コピー</button>
+        </div>
+      </section>
+
+      <!-- voice / memo -->
+      <div class="bg-white rounded-2xl shadow-sm border p-4 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-black text-sm">メモ（音声入力OK）</div>
+            <div class="text-[10px] font-black text-slate-500">短く・確実に残す（後で全件ビューで整う）</div>
+          </div>
+
+          <button id="btnToggleImportant" class="px-3 py-2 rounded-full border text-xs font-black active:bg-slate-50">
+            重要：OFF
+          </button>
+        </div>
+
+        <div class="flex flex-col items-center py-1">
+          <div class="relative">
+            <div id="pulseRing" class="absolute inset-0 rounded-full bg-red-400 hidden recording-ring"></div>
+            <button id="btnVoiceRec" class="relative z-10 w-20 h-20 rounded-full bg-blue-600 text-white shadow-lg flex items-center justify-center flex-col gap-0.5 active:scale-95 transition-transform">
+              <svg id="micIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-18a3 3 0 013 3v8a3 3 0 01-3 3 3 3 0 01-3-3V5a3 3 0 013-3z"></path></svg>
+              <span id="micText" class="text-[9px] font-black tracking-tighter uppercase">REC START</span>
+            </button>
+          </div>
+          <div id="interimText" class="mt-2 text-xs text-blue-600 font-black h-4 italic"></div>
+        </div>
+
+        <div class="space-y-2">
+          <textarea id="voiceInputArea" class="w-full p-4 bg-slate-50 border rounded-2xl text-base font-black focus:ring-2 focus:ring-blue-500 outline-none" rows="2" placeholder="詳細なメモはこちら..."></textarea>
+          <button id="btnAddTimeline" class="w-full py-4 bg-slate-900 text-white font-black rounded-2xl shadow-lg active:scale-[0.98]">自由入力を記録</button>
+        </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2">
-        <button id="btnCopyTeams" class="py-4 bg-white border text-sm font-black rounded-2xl active:bg-slate-50">📣 Teams投稿文コピー</button>
-        <button id="btnShareTeams" class="py-4 bg-slate-700 text-white text-sm font-black rounded-2xl active:scale-95">Teams投稿文を共有</button>
-      </div>
-    </section>
+      <!-- quick tags accordions -->
+      <div class="bg-white rounded-2xl shadow-sm border p-4 space-y-3">
+        <div class="text-center">
+          <div class="font-black text-sm text-slate-900">クイック入力</div>
+          <div class="text-[10px] text-slate-400 font-black uppercase tracking-tight">Tap to Log</div>
+        </div>
 
+        <div class="space-y-3">
+          <!-- status -->
+          <div class="border rounded-xl overflow-hidden">
+            <button onclick="toggleAccordion('acc-status')" class="w-full px-4 py-3 bg-blue-50 flex justify-between items-center text-blue-800 font-black text-sm">
+              <span>STATUS / 意識・呼吸</span>
+              <svg id="icon-acc-status" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div id="acc-status" class="collapse-content bg-white">
+              <div class="grid grid-cols-2 gap-2 p-3">
+                <button class="quick-tag bg-blue-100 text-blue-800 rounded-lg text-xs font-black" data-val="意識あり（明瞭）">意識あり</button>
+                <button class="quick-tag bg-blue-100 text-blue-800 rounded-lg text-xs font-black" data-val="意識混濁（呼びかけに反応薄い）">意識混濁</button>
+                <button class="quick-tag bg-red-100 text-red-800 rounded-lg text-xs font-black" data-val="意識消失・無反応">意識消失</button>
+                <button class="quick-tag bg-slate-100 text-slate-800 rounded-lg text-xs font-black" data-val="呼吸正常">呼吸正常</button>
+                <button class="quick-tag bg-orange-100 text-orange-800 rounded-lg text-xs font-black" data-val="呼吸困難（ゼーゼーする）">呼吸困難</button>
+                <button class="quick-tag bg-red-600 text-white rounded-lg text-xs font-black" data-val="呼吸停止・死戦期呼吸（あえぎ呼吸）">呼吸停止</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- symptoms -->
+          <div class="border rounded-xl overflow-hidden">
+            <button onclick="toggleAccordion('acc-symptoms')" class="w-full px-4 py-3 bg-slate-100 flex justify-between items-center text-slate-800 font-black text-sm">
+              <span>SYMPTOMS / 全身症状</span>
+              <svg id="icon-acc-symptoms" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div id="acc-symptoms" class="collapse-content bg-white">
+              <div class="grid grid-cols-2 gap-2 p-3">
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="顔面蒼白（血の気が引いた）">顔面蒼白</button>
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="顔面紅潮（赤ら顔）">顔面紅潮</button>
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="冷や汗がひどい">冷や汗</button>
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="嘔吐（おうと）あり">嘔吐あり</button>
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="痙攣（けいれん）開始">痙攣開始</button>
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="痙攣（けいれん）消失">痙攣消失</button>
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="全身にじんましん出現">じんましん</button>
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="激しい腹痛">激しい腹痛</button>
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="失禁あり">失禁あり</button>
+                <button class="quick-tag bg-slate-50 border text-slate-800 rounded-lg text-xs font-black" data-val="鼻出血（鼻血）">鼻出血</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- treatment -->
+          <div class="border rounded-xl overflow-hidden">
+            <button onclick="toggleAccordion('acc-treatment')" class="w-full px-4 py-3 bg-green-50 flex justify-between items-center text-green-800 font-black text-sm">
+              <span>TREATMENT / 処置内容</span>
+              <svg id="icon-acc-treatment" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div id="acc-treatment" class="collapse-content bg-white">
+              <div class="grid grid-cols-2 gap-2 p-3">
+                <button class="quick-tag bg-green-100 text-green-800 rounded-lg text-xs font-black" data-val="エピペン（自己注射薬）使用">エピペン使用</button>
+                <button class="quick-tag bg-green-100 text-green-800 rounded-lg text-xs font-black" data-val="回復体位（横向き）に固定">回復体位</button>
+                <button class="quick-tag bg-green-100 text-green-800 rounded-lg text-xs font-black" data-val="衣服を緩める（襟元等）">衣服を緩める</button>
+                <button class="quick-tag bg-green-100 text-green-800 rounded-lg text-xs font-black" data-val="毛布で保温開始">毛布で保温</button>
+                <button class="quick-tag bg-green-100 text-green-800 rounded-lg text-xs font-black" data-val="保冷剤で患部を冷却中">冷却開始</button>
+                <button class="quick-tag bg-green-100 text-green-800 rounded-lg text-xs font-black" data-val="傷口を流水で洗浄">傷口洗浄</button>
+                <button class="quick-tag bg-green-100 text-green-800 rounded-lg text-xs font-black" data-val="圧迫による止血処置">圧迫止血</button>
+                <button class="quick-tag bg-green-100 text-green-800 rounded-lg text-xs font-black" data-val="酸素投与開始">酸素投与</button>
+                <button class="quick-tag bg-red-100 text-red-800 rounded-lg text-xs font-black border-2 border-red-300" data-val="胸骨圧迫（心臓マッサージ）開始">胸骨圧迫開始</button>
+                <button class="quick-tag bg-red-100 text-red-800 rounded-lg text-xs font-black border-2 border-red-300" data-val="AED装着・解析開始">AED解析</button>
+                <button class="quick-tag bg-red-100 text-red-800 rounded-lg text-xs font-black border-2 border-red-300" data-val="AEDによる電気ショック実施">電気ショック</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-2">
+            <button class="quick-tag bg-slate-900 text-white rounded-2xl text-xs font-black" data-val="救急車が到着・引き継ぎ開始">救急車 到着</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- timeline -->
+      <div class="space-y-3 px-1">
+        <div class="flex items-center justify-between">
+          <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center py-2 italic border-b border-slate-200 flex-1">Activity Log</h3>
+        </div>
+
+        <div id="timeline" class="space-y-3">
+          <p id="timelineEmpty" class="text-center text-slate-400 py-10 text-sm font-black">（記録なし）</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mt-6">
+          <button id="btnCopyTimeline" class="py-4 text-slate-700 text-sm font-black border-2 border-dashed border-slate-300 rounded-2xl active:bg-slate-50">記録をコピー</button>
+          <button id="btnPrint" class="py-4 bg-blue-600 text-white text-sm font-black rounded-2xl shadow-lg flex items-center justify-center gap-2 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            用紙として印刷
+          </button>
+        </div>
+      </div>
+
+    </div>
   </main>
 
-  <!-- LIVE BAR -->
-  <div class="fixed left-0 right-0 bottom-[86px] z-50 no-print px-3">
-    <button id="liveBar" class="w-full bg-white border shadow-[0_-6px_18px_rgba(0,0,0,0.12)] rounded-2xl px-4 py-3 flex items-center gap-3 active:bg-slate-50">
-      <div class="shrink-0">
-        <div class="text-[10px] font-black text-slate-500">最新</div>
-        <div id="liveTime" class="text-sm font-black text-blue-600">--:--</div>
-      </div>
-      <div class="min-w-0 flex-1 text-left">
-        <div id="liveText" class="text-sm font-black text-slate-900 truncate">（記録なし）</div>
-        <div class="text-[10px] font-black text-slate-500">件数：<span id="liveCount">0</span> ／ 役割：<span id="liveRoles">0</span> ／ タップでログへ</div>
-      </div>
-      <div class="shrink-0 text-[10px] font-black text-slate-500"><span id="liveState">未開始</span></div>
+  <!-- ===================== BOTTOM NAV ===================== -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex items-center justify-around px-2 py-2 no-print shadow-[0_-4px_15px_rgba(0,0,0,0.1)] z-40 safe-area-bottom">
+    <button id="nav1" class="flex flex-col items-center gap-1 flex-1 py-1 text-blue-600">
+      <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
+      <span class="text-[10px] font-black">1. 通報原稿</span>
     </button>
-  </div>
 
-  <!-- BOTTOM -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t no-print shadow-[0_-4px_15px_rgba(0,0,0,0.1)] z-50 safe-area-bottom pb-safe">
-    <div class="px-3 py-2 grid grid-cols-4 gap-2">
-      <button id="btnGoCall" class="py-3 rounded-2xl bg-white border font-black text-xs active:bg-slate-50">通報</button>
-      <button id="btnGoLog" class="py-3 rounded-2xl bg-slate-900 text-white font-black text-xs active:scale-[0.99]">記録</button>
-      <button id="btnGoHandoff" class="py-3 rounded-2xl bg-blue-600 text-white font-black text-xs active:scale-[0.99]">引継ぎ</button>
-      <button id="btnBigStartStop" class="py-3 rounded-2xl bg-emerald-600 text-white font-black text-xs active:scale-[0.99]">開始/停止</button>
-    </div>
+    <button id="nav2" class="flex flex-col items-center gap-1 flex-1 py-1 text-slate-400">
+      <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd"></path></svg>
+      <span class="text-[10px] font-black">2. 経過記録</span>
+    </button>
   </nav>
 
-  <!-- QUICK SHEET -->
-  <div id="quickSheetWrap" class="fixed inset-0 z-[80] hidden no-print">
-    <div id="sheetBackdrop" class="absolute inset-0 bg-black/40"></div>
-    <div class="absolute left-0 right-0 bottom-0 bg-white rounded-t-3xl shadow-2xl p-4 pb-safe">
-      <div class="flex items-center justify-between mb-2">
-        <div class="font-black text-slate-900">⚡ すぐ記録（ワンタップ）</div>
-        <button id="btnCloseQuickSheet" class="px-3 py-2 rounded-full border text-xs font-black active:bg-slate-50">閉じる</button>
-      </div>
-      <div class="text-[10px] font-black text-slate-500 mb-3">押した内容が「時刻付き」でログに追加されます。</div>
-
-      <div class="space-y-3">
-        <div>
-          <div class="text-[11px] font-black text-slate-700 mb-2">✅ ケース（各校で設定した最大10）</div>
-          <div id="caseChips" class="grid grid-cols-2 gap-2"></div>
-        </div>
-
-        <div>
-          <div class="text-[11px] font-black text-slate-700 mb-2">✅ 状態・対応（共通）</div>
-          <div class="grid grid-cols-2 gap-2">
-            <button class="chip rounded-2xl bg-red-600 text-white text-xs font-black" data-log="重大：意識なし / 呼吸不明（緊急対応）">重大：意識なし</button>
-            <button class="chip rounded-2xl bg-orange-100 text-orange-900 text-xs font-black border border-orange-200" data-log="安全確保：周囲の危険排除 / 児童を離す">安全確保</button>
-            <button class="chip rounded-2xl bg-blue-100 text-blue-900 text-xs font-black border border-blue-200" data-log="連絡：管理職へ報告（状況共有）">管理職へ報告</button>
-            <button class="chip rounded-2xl bg-emerald-100 text-emerald-900 text-xs font-black border border-emerald-200" data-log="誘導：正門で救急隊を誘導する職員を配置">正門誘導</button>
-            <button class="chip rounded-2xl bg-slate-100 text-slate-900 text-xs font-black border" data-log="呼吸：苦しそう（呼吸困難）">呼吸困難</button>
-            <button class="chip rounded-2xl bg-white text-slate-900 text-xs font-black border" data-log="嘔吐あり">嘔吐あり</button>
-            <button class="chip rounded-2xl bg-white text-slate-900 text-xs font-black border" id="btnLogAed">AED搬送（場所つき）</button>
-            <button class="chip rounded-2xl bg-white text-slate-900 text-xs font-black border" id="btnLogGate">正門誘導（場所つき）</button>
-          </div>
-        </div>
-
-        <button id="btnQuickToLog" class="w-full py-4 rounded-2xl bg-slate-900 text-white font-black text-sm active:scale-[0.99]">ログ画面へ移動</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ROLE SHEET -->
-  <div id="roleSheetWrap" class="fixed inset-0 z-[85] hidden no-print">
-    <div id="roleBackdrop" class="absolute inset-0 bg-black/40"></div>
-    <div class="absolute left-0 right-0 bottom-0 bg-white rounded-t-3xl shadow-2xl p-4 pb-safe">
-      <div class="flex items-center justify-between mb-2">
-        <div class="font-black text-slate-900">🧩 役割分担ボード（確定→ログ化）</div>
-        <button id="btnCloseRoleSheet" class="px-3 py-2 rounded-full border text-xs font-black active:bg-slate-50">閉じる</button>
-      </div>
-      <div class="text-[10px] font-black text-slate-500 mb-3">役割を「確定」すると、担当者付きで記録されます。</div>
-
-      <div class="grid grid-cols-2 gap-2">
-        <button id="btnRoleAutoFill" class="py-3 rounded-2xl bg-slate-900 text-white text-xs font-black active:scale-[0.99]">主/記録を自動入力</button>
-        <button id="btnRoleClear" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50">役割を全解除</button>
-      </div>
-
-      <div class="mt-3 space-y-2" id="roleList"></div>
-
-      <button id="btnRoleToLog" class="w-full py-4 mt-3 rounded-2xl bg-blue-600 text-white font-black text-sm active:scale-[0.99]">ログ画面へ移動</button>
-    </div>
-  </div>
-
-  <!-- LOG VIEWER (NEW) -->
-  <div id="logViewerWrap" class="fixed inset-0 z-[90] hidden no-print">
+  <!-- ===================== LOG VIEWER (全件ビュー) ===================== -->
+  <div id="logViewerWrap" class="fixed inset-0 z-[90] hidden">
     <div id="logViewerBackdrop" class="absolute inset-0 bg-black/50"></div>
-    <div class="absolute left-0 right-0 top-0 bottom-0 bg-white flex flex-col">
+
+    <div class="absolute inset-0 bg-white flex flex-col">
       <div class="sticky top-0 bg-white border-b p-3 flex items-center gap-2">
-        <div class="font-black text-slate-900">👀 記録 全件ビュー</div>
-        <div class="ml-auto flex items-center gap-2">
-          <button id="btnCloseLogViewer" class="px-3 py-2 rounded-full border text-xs font-black active:bg-slate-50">閉じる</button>
-        </div>
+        <div class="font-black">👀 記録 全件ビュー</div>
+        <button id="btnCloseLogViewer" class="ml-auto px-3 py-2 rounded-full border text-xs font-black active:bg-slate-50">閉じる</button>
       </div>
 
       <div class="p-3 space-y-2 border-b bg-slate-50">
-        <input id="lvSearch" class="w-full p-3 bg-white border rounded-2xl text-sm font-black" placeholder="検索（例：AED / けいれん / 12:34 など）">
+        <input id="lvSearch" class="w-full p-3 bg-white border rounded-2xl text-sm font-black" placeholder="検索（例：AED / けいれん / 12:34）">
         <div class="grid grid-cols-3 gap-2">
           <button id="lvOrder" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50">表示：新→古</button>
           <button id="lvOnlyImp" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50">重要のみ：OFF</button>
-          <button id="lvMode" class="py-3 rounded-2xl bg-slate-900 text-white text-xs font-black active:scale-[0.99]">表示：カード</button>
+          <button id="lvMode" class="py-3 rounded-2xl bg-slate-900 text-white text-xs font-black active:opacity-90">表示：カード</button>
         </div>
-        <div class="text-[10px] font-bold text-slate-500">
-          件数：<span id="lvCount" class="font-black">0</span>
-        </div>
+        <div class="text-[10px] font-bold text-slate-500">件数：<span id="lvCount" class="font-black">0</span></div>
       </div>
 
-      <div class="flex-1 overflow-y-auto p-3" id="lvBody">
-        <!-- list injected -->
-      </div>
+      <div class="flex-1 overflow-y-auto p-3" id="lvBody"></div>
 
-      <div class="border-t p-3 bg-white grid grid-cols-2 gap-2 pb-safe">
+      <div class="border-t p-3 bg-white grid grid-cols-2 gap-2">
         <button id="lvCopy" class="py-4 rounded-2xl bg-white border font-black text-sm active:bg-slate-50">コピー</button>
-        <button id="lvShare" class="py-4 rounded-2xl bg-slate-900 text-white font-black text-sm active:scale-[0.99]">共有</button>
+        <button id="lvShare" class="py-4 rounded-2xl bg-slate-900 text-white font-black text-sm active:opacity-90">共有</button>
       </div>
     </div>
   </div>
 
-  <div id="toast" class="toast">OK</div>
-
 <script>
-  const $ = (id) => document.getElementById(id);
+const $ = (id) => document.getElementById(id);
+const SETTINGS_KEY = "school_emergency_settings_v13";
+const INCIDENT_KEY  = "school_emergency_incident_v13";
 
-  // ===== Defaults =====
-  const DEFAULT_CASES = [
-    "転倒（頭部打撲の疑い）",
-    "切り傷・出血（止血が必要）",
-    "熱中症疑い（めまい・吐き気）",
-    "アレルギー反応（じんましん等）",
-    "呼吸困難（ゼーゼー/息苦しい）",
-    "けいれん（発作）",
-    "誤嚥・窒息疑い（のど詰まり）",
-    "失神（意識消失）",
-    "過呼吸・パニック",
-    "校外活動中の負傷（転倒/接触）"
-  ];
+function nowTimeStr(d=new Date()){
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mm = String(d.getMinutes()).padStart(2,"0");
+  return `${hh}:${mm}`;
+}
+function fmtDateTime(ts){
+  if(!ts) return "--";
+  const d = new Date(ts);
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")} ${nowTimeStr(d)}`;
+}
+function msToElapsed(ms){
+  if(ms==null || isNaN(ms)) return "--";
+  const sec = Math.max(0, Math.floor(ms/1000));
+  const h = Math.floor(sec/3600);
+  const m = Math.floor((sec%3600)/60);
+  const s = sec%60;
+  if(h>0) return `${h}時間${String(m).padStart(2,"0")}分`;
+  if(m>0) return `${m}分${String(s).padStart(2,"0")}秒`;
+  return `${s}秒`;
+}
 
-  // NEW: 校別チェック初期セット（最大10）
-  const DEFAULT_CHECKS = [
-    "周囲安全確保（危険除去・児童を離す）",
-    "管理職へ連絡（状況共有）",
-    "119通報（必要時）",
-    "AED手配（場所確認→搬送）",
-    "胸骨圧迫 / AED解析（必要時）",
-    "正門誘導手配（待機位置まで）",
-    "保健室準備（毛布・氷・担架等）",
-    "保護者へ連絡（状況共有）",
-    "児童誘導（別室・廊下整理）",
-    "救急隊へ引継ぎ（記録渡し）"
-  ];
-
-  const ROLE_PRESETS = [
-    { key:"admin", label:"管理職連絡", hint:"校内体制・指示系統" },
-    { key:"call119", label:"119通報", hint:"通報・情報伝達" },
-    { key:"aedduty", label:"AED準備", hint:"AED持参/装着準備" },
-    { key:"cpr", label:"胸骨圧迫", hint:"救命処置" },
-    { key:"gate", label:"正門誘導", hint:"救急隊誘導" },
-    { key:"guardian", label:"保護者連絡", hint:"電話/迎え/説明" },
-    { key:"safety", label:"周囲安全確保", hint:"危険除去・スペース確保" },
-    { key:"students", label:"児童誘導", hint:"群衆整理・隔離" },
-    { key:"nurse", label:"保健室準備", hint:"担架/毛布/氷/記録用意" },
-    { key:"log", label:"記録担当", hint:"時系列・引継ぎ" },
-  ];
-
-  // keys
-  const KEY_SETTINGS = "school_emergency_settings_v13";
-  const KEY_INCIDENT = "school_emergency_incident_v13";
-
-  // state
-  let computedAgeStr = "--";
-  let incidentStartAt = null;
-  let incidentEndAt = null;
-  let lastDeleted = null;
-
-  // settings cache
-  let currentCasePresets = [];
-  let currentCheckPresets = [];
-
-  // Log Viewer state
-  let lvOrderNewestFirst = true;
-  let lvOnlyImportant = false;
-  let lvMode = "card"; // "card" | "text"
-
-  // ===== Utils =====
-  function toast(msg){
-    const t = $("toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    setTimeout(()=>t.classList.remove("show"), 1200);
-  }
-  function haptic(ms=15){ if(navigator.vibrate) navigator.vibrate(ms); }
-  function safeText(v){ return (v||"").toString().trim(); }
-  function nowTimeStr(d=new Date()){ return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
-  function nowDateTimeStr(d=new Date()){ return d.toLocaleString('ja-JP'); }
-  function escapeHtml(str){
-    return (str||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-  }
-  function scrollToSection(selector){
-    const el = document.querySelector(selector);
-    if(!el) return;
-    el.scrollIntoView({behavior:"smooth", block:"start"});
-  }
-
-  // ===== Step nav =====
-  function setStepActive(step){
-    document.querySelectorAll(".stepBtn").forEach(b=>{
-      const on = (b.dataset.step === String(step));
-      b.classList.toggle("bg-slate-900", on);
-      b.classList.toggle("text-white", on);
-      b.classList.toggle("border-slate-900", on);
-      b.classList.toggle("bg-white", !on);
-    });
-  }
-  document.querySelectorAll(".stepBtn").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      const s = b.dataset.step;
-      setStepActive(s);
-      if(s==="1") scrollToSection("main section:nth-of-type(1)");
-      if(s==="2") scrollToSection("main section:nth-of-type(4)");
-      if(s==="3") scrollToSection("#logSection");
-      if(s==="4") scrollToSection("#handoffSection");
-    });
+function copyText(text){
+  return navigator.clipboard.writeText(text).then(()=>alert("コピーしました")).catch(()=>{
+    const ta=document.createElement("textarea");
+    ta.value=text; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); document.body.removeChild(ta);
+    alert("コピーしました");
   });
-  $("btnGoCall").onclick = ()=>{ setStepActive(2); scrollToSection("main section:nth-of-type(4)"); };
-  $("btnGoLog").onclick  = ()=>{ setStepActive(3); scrollToSection("#logSection"); };
-  $("btnGoHandoff").onclick = ()=>{ setStepActive(4); scrollToSection("#handoffSection"); };
-
-  // ===== Toggle panels =====
-  $("btnToggleSettings").onclick = ()=>{
-    $("settingsPanel").classList.toggle("hidden");
-    $("btnToggleSettings").textContent = $("settingsPanel").classList.contains("hidden") ? "開く" : "閉じる";
-  };
-  $("btnChecklistSettingsHint").onclick = ()=>{
-    $("settingsPanel").classList.remove("hidden");
-    $("btnToggleSettings").textContent = "閉じる";
-    $("settingsPanel").scrollIntoView({behavior:"smooth", block:"start"});
-    toast("設定内の「初動チェック」で編集できます");
-  };
-  $("btnToggleMedical").onclick = ()=>{
-    $("medicalPanel").classList.toggle("open");
-    $("iconMedical").classList.toggle("rotate-180");
-  };
-
-  // ===== Age calc =====
-  function gradeLabel(){
-    const v = $("pGrade").value;
-    if(!v) return "（不明）";
-    if(/^\d$/.test(v)) return v + "年生";
-    return v;
-  }
-  function updateAge(){
-    const birthVal = $("pBirth").value;
-    const gradeVal = $("pGrade").value;
-    const now = new Date();
-    if (birthVal) {
-      const birthDate = new Date(birthVal);
-      let age = now.getFullYear() - birthDate.getFullYear();
-      const m = now.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && now.getDate() < birthDate.getDate())) age--;
-      computedAgeStr = `${age}歳`;
-    } else if (gradeVal && !isNaN(gradeVal)) {
-      const grade = parseInt(gradeVal,10);
-      computedAgeStr = `${grade + 5}〜${grade + 6}歳相当`;
-    } else {
-      computedAgeStr = "--";
+}
+async function shareText(title, text){
+  try{
+    if(navigator.share){
+      await navigator.share({ title, text });
+      return;
     }
-    $("ageDisplay").innerText = `年齢：${computedAgeStr}`;
-    buildScript();
-    persistIncident();
-  }
+  }catch(e){}
+  return copyText(text);
+}
 
-  // ===== Speech Recognition =====
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let recognition = null;
-  let isRecording = false;
-  if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.lang = "ja-JP";
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.onresult = (event)=>{
-      let interim = "";
-      let final = "";
-      for(let i=event.resultIndex; i<event.results.length; i++){
-        if(event.results[i].isFinal) final += event.results[i][0].transcript;
-        else interim += event.results[i][0].transcript;
-      }
-      if(final) $("voiceInputArea").value += final;
-      $("interimText").innerText = interim;
-    };
-    recognition.onend = ()=>{ if(isRecording) recognition.start(); };
-  } else {
-    $("voiceHint").textContent = "※この端末では音声入力に対応していません";
-    $("btnVoiceRec").disabled = true;
-    $("btnVoiceRec").classList.add("opacity-50");
+/* 初期セット（ケース10） */
+const DEFAULT_CASES = [
+  "頭部打撲（転倒・衝突）",
+  "切り傷・出血（工作/体育）",
+  "骨折疑い（転倒・落下）",
+  "熱中症疑い（屋外活動）",
+  "アレルギー反応（じんましん等）",
+  "喘息発作（呼吸苦）",
+  "けいれん（ひきつけ）",
+  "誤飲・窒息疑い",
+  "腹痛・嘔吐（体調急変）",
+  "意識消失（倒れた）"
+];
+
+/* 初期セット（初動チェック10） */
+const DEFAULT_CHECKS = [
+  "周囲安全確保（危険除去・児童を離す）",
+  "管理職へ連絡（状況共有）",
+  "119通報（必要時）",
+  "AED手配（場所確認→搬送）",
+  "胸骨圧迫 / AED解析（必要時）",
+  "正門誘導手配（誘導位置へ）",
+  "保健室準備（毛布・氷・担架等）",
+  "保護者へ連絡（状況共有）",
+  "児童誘導（別室・導線確保）",
+  "救急隊へ引継ぎ（記録渡し）"
+];
+
+let settings = {
+  schoolName:"", schoolAddr:"", schoolPhone:"",
+  casePresets:[...DEFAULT_CASES],
+  checkPresets:[...DEFAULT_CHECKS]
+};
+
+let incident = {
+  active:false,
+  startTs:null,
+  endTs:null,
+  importantNext:false,
+  entries:[],
+  checklist:{},
+  form:{
+    place:"", pName:"", pGrade:"", pSex:"", pBirth:"",
+    symptom:"", pHistory:"", pAllergy:""
+  },
+  computedAgeStr:"--"
+};
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function toggleCollapse(id){ $(id).classList.toggle("hidden"); }
+function toggleAccordion(id){
+  const el = $(id);
+  const icon = $("icon-" + id);
+  el.classList.toggle("open");
+  icon.classList.toggle("rotate-180");
+}
+
+/* タブ */
+function switchTab(tabNum){
+  if(tabNum===1){
+    $("section1").classList.remove("hidden");
+    $("section2").classList.add("hidden");
+    $("nav1").classList.replace("text-slate-400", "text-blue-600");
+    $("nav2").classList.replace("text-blue-600", "text-slate-400");
+  }else{
+    $("section1").classList.add("hidden");
+    $("section2").classList.remove("hidden");
+    $("nav2").classList.replace("text-slate-400", "text-blue-600");
+    $("nav1").classList.replace("text-blue-600", "text-slate-400");
+    updateIncidentBar();
   }
-  function startRec(){
-    if(!recognition) return;
-    isRecording = true;
+}
+$("nav1").onclick = () => switchTab(1);
+$("nav2").onclick = () => switchTab(2);
+
+/* 設定 */
+function setPresetInputs(){
+  document.querySelectorAll(".casePreset").forEach(inp=>{
+    const idx = parseInt(inp.dataset.idx,10);
+    inp.value = settings.casePresets[idx] ?? "";
+  });
+  document.querySelectorAll(".checkPreset").forEach(inp=>{
+    const idx = parseInt(inp.dataset.idx,10);
+    inp.value = settings.checkPresets[idx] ?? "";
+  });
+}
+function getCasePresetsFromUI(){
+  const arr=[];
+  document.querySelectorAll(".casePreset").forEach(inp=>{
+    const v=(inp.value||"").trim();
+    if(v) arr.push(v);
+  });
+  return arr.slice(0,10);
+}
+function getCheckPresetsFromUI(){
+  const arr=[];
+  document.querySelectorAll(".checkPreset").forEach(inp=>{
+    const v=(inp.value||"").trim();
+    if(v) arr.push(v);
+  });
+  return arr.slice(0,10);
+}
+
+function loadSettings(){
+  const saved = localStorage.getItem(SETTINGS_KEY);
+  if(saved){
     try{
-      recognition.start();
-      $("pulseRing").classList.remove("hidden");
-      $("btnVoiceRec").classList.replace("bg-blue-600","bg-red-600");
-      $("micText").innerText = "REC ON";
-      toast("録音開始");
-      haptic(20);
+      const s=JSON.parse(saved);
+      settings = {
+        schoolName: s.schoolName ?? s.name ?? "",
+        schoolAddr: s.schoolAddr ?? s.addr ?? "",
+        schoolPhone: s.schoolPhone ?? s.phone ?? "",
+        casePresets: Array.isArray(s.casePresets) ? s.casePresets.slice(0,10) : [...DEFAULT_CASES],
+        checkPresets: Array.isArray(s.checkPresets) ? s.checkPresets.slice(0,10) : [...DEFAULT_CHECKS]
+      };
     }catch(e){}
   }
-  function stopRec(){
-    isRecording = false;
-    if(recognition) recognition.stop();
-    $("pulseRing").classList.add("hidden");
-    $("btnVoiceRec").classList.replace("bg-red-600","bg-blue-600");
-    $("micText").innerText = "REC START";
-    $("interimText").innerText = "";
-    haptic(10);
-  }
-  $("btnVoiceRec").onclick = ()=> isRecording ? stopRec() : startRec();
+  $("schoolName").value = settings.schoolName || "";
+  $("schoolAddr").value = settings.schoolAddr || "";
+  $("schoolPhone").value = settings.schoolPhone || "";
+  setPresetInputs();
+  renderCaseButtons();
+}
+function saveSettings(){
+  settings.schoolName = $("schoolName").value || "";
+  settings.schoolAddr = $("schoolAddr").value || "";
+  settings.schoolPhone = $("schoolPhone").value || "";
+  settings.casePresets = getCasePresetsFromUI();
+  settings.checkPresets = getCheckPresetsFromUI();
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
 
-  // ===== Incident storage =====
-  function loadIncidentRaw(){
-    const saved = localStorage.getItem(KEY_INCIDENT);
-    if(!saved) return null;
-    try { return JSON.parse(saved); } catch { return null; }
-  }
-  function ensureIncident(){
-    const raw = loadIncidentRaw();
-    if(!raw){
-      localStorage.setItem(KEY_INCIDENT, JSON.stringify({ meta:{}, form:{}, entries:[], roles:{}, checklist:{} }));
-    }
-  }
-  function getEntries(){
-    const obj = loadIncidentRaw();
-    return (obj?.entries && Array.isArray(obj.entries)) ? obj.entries : [];
-  }
-  function setEntries(entries){
-    const obj = loadIncidentRaw() || {};
-    obj.entries = entries;
-    localStorage.setItem(KEY_INCIDENT, JSON.stringify(obj));
-  }
-  function getRoles(){
-    const obj = loadIncidentRaw();
-    return obj?.roles && typeof obj.roles==="object" ? obj.roles : {};
-  }
-  function setRoles(roles){
-    const obj = loadIncidentRaw() || {};
-    obj.roles = roles;
-    localStorage.setItem(KEY_INCIDENT, JSON.stringify(obj));
-    refreshRolesBadge();
-    refreshLiveBar();
-  }
-  // NEW: checklist state is keyed by "item text" (編集に強い)
-  function getChecklistState(){
-    const obj = loadIncidentRaw();
-    return obj?.checklist && typeof obj.checklist==="object" ? obj.checklist : {};
-  }
-  function setChecklistState(state){
-    const obj = loadIncidentRaw() || {};
-    obj.checklist = state;
-    localStorage.setItem(KEY_INCIDENT, JSON.stringify(obj));
+/* インシデント */
+function getEntries(){ return Array.isArray(incident.entries) ? incident.entries : []; }
+
+function saveIncident(){
+  incident.form = {
+    place:$("place").value || "",
+    pName:$("pName").value || "",
+    pGrade:$("pGrade").value || "",
+    pSex:$("pSex").value || "",
+    pBirth:$("pBirth").value || "",
+    symptom:$("symptom").value || "",
+    pHistory:$("pHistory").value || "",
+    pAllergy:$("pAllergy").value || ""
+  };
+  localStorage.setItem(INCIDENT_KEY, JSON.stringify(incident));
+}
+function loadIncident(){
+  const saved = localStorage.getItem(INCIDENT_KEY);
+  if(saved){
+    try{
+      const i=JSON.parse(saved);
+      incident = {
+        ...incident,
+        ...i,
+        entries: Array.isArray(i.entries) ? i.entries : [],
+        checklist: (i.checklist && typeof i.checklist==="object") ? i.checklist : {},
+        form: (i.form && typeof i.form==="object") ? i.form : incident.form,
+        computedAgeStr: i.computedAgeStr ?? incident.computedAgeStr
+      };
+    }catch(e){}
   }
 
-  // ===== Timeline CRUD =====
-  function makeEntryObj(text, t=new Date()){
-    return {
-      id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
-      at: t.toISOString(),
-      time: nowTimeStr(t),
-      text: safeText(text),
-      important: false
+  $("place").value   = incident.form.place || "";
+  $("pName").value   = incident.form.pName || "";
+  $("pGrade").value  = incident.form.pGrade || "";
+  $("pSex").value    = incident.form.pSex || "";
+  $("pBirth").value  = incident.form.pBirth || "";
+  $("symptom").value = incident.form.symptom || "";
+  $("pHistory").value = incident.form.pHistory || "";
+  $("pAllergy").value = incident.form.pAllergy || "";
+
+  $("ageDisplay").innerText = `年齢：${incident.computedAgeStr || "--"} 歳`.replace("歳 歳","歳");
+  renderTimeline();
+  renderChecklist();
+  updateIncidentBar();
+  buildScript();
+}
+
+/* 年齢 */
+function updateAge(){
+  const birthVal = $("pBirth").value;
+  const gradeVal = $("pGrade").value;
+  const now = new Date();
+
+  let computedAgeStr = "--";
+  if(birthVal){
+    const bd = new Date(birthVal);
+    let age = now.getFullYear() - bd.getFullYear();
+    const m = now.getMonth() - bd.getMonth();
+    if(m < 0 || (m===0 && now.getDate() < bd.getDate())) age--;
+    computedAgeStr = String(age);
+  }else if(gradeVal && !isNaN(gradeVal)){
+    const g = parseInt(gradeVal,10);
+    computedAgeStr = `${g+5}〜${g+6}`;
+  }else{
+    computedAgeStr = "--";
+  }
+  incident.computedAgeStr = computedAgeStr;
+  $("ageDisplay").innerText = `年齢：${computedAgeStr} 歳`.replace(" 歳","歳");
+  saveIncident();
+  buildScript();
+}
+
+/* 原稿 */
+function buildScript(){
+  const gradeVal = $("pGrade").value;
+  const gradeStr = gradeVal
+    ? (String(gradeVal).match(/^\d$/) ? `${gradeVal}年生` : gradeVal)
+    : "（不明）";
+
+  const ageStr = (incident.computedAgeStr && incident.computedAgeStr!=="--") ? `${incident.computedAgeStr}歳` : "";
+
+  const data = {
+    school: $("schoolName").value || "（学校名）",
+    addr: $("schoolAddr").value || "（学校住所）",
+    place: $("place").value || "（場所不明）",
+    phone: $("schoolPhone").value || "（電話）",
+    pName: $("pName").value || "（氏名不明）",
+    pGrade: gradeStr,
+    pSex: $("pSex").value || "（性別不明）",
+    symptom: $("symptom").value || "（症状不明）",
+    age: ageStr
+  };
+
+  $("scriptDisplay").innerText =
+`「救急要請です」
+場所：${data.school}
+住所：${data.addr}
+詳細：${data.place}
+電話：${data.phone}
+
+対象：${data.pName}さん（${data.pGrade}・${data.pSex}${data.age ? "・" + data.age : ""}）
+症状：${data.symptom}
+
+正門にて誘導待機中です。`;
+}
+
+/* ケース */
+function renderCaseButtons(){
+  const wrap = $("caseButtons");
+  wrap.innerHTML = "";
+  const cases = (settings.casePresets || []).filter(Boolean).slice(0,10);
+
+  if(cases.length===0){
+    wrap.innerHTML = `<div class="col-span-2 text-center text-sm font-black text-slate-400 py-6 border rounded-2xl bg-slate-50">
+      （ケース未設定です。学校情報で入力してください）
+    </div>`;
+    return;
+  }
+
+  cases.forEach(label=>{
+    const btn = document.createElement("button");
+    btn.className = "quick-tag bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl text-xs font-black";
+    btn.textContent = label;
+    btn.onclick = ()=>{
+      const cur = ($("symptom").value || "").trim();
+      const add = label;
+      $("symptom").value = cur ? (cur.includes(add) ? cur : (cur + " / " + add)) : add;
+      buildScript();
+      saveIncident();
+      addEntry(`ケース選択：${label}`, true);
     };
-  }
-  function addEntry(text){
-    const t = safeText(text);
-    if(!t) return;
+    wrap.appendChild(btn);
+  });
+}
 
-    if(!incidentStartAt){
-      incidentStartAt = Date.now();
-      incidentEndAt = null;
-      toast("開始も自動記録しました");
-    }
-    const entries = getEntries();
-    entries.push(makeEntryObj(t, new Date()));
-    setEntries(entries);
+/* 記録 */
+function addEntry(text, forceImportant=false){
+  const t = (text||"").trim();
+  if(!t) return;
 
-    $("voiceInputArea").value = "";
-    stopRec();
-    refreshTimeline();
-    buildScript();
-    persistIncident();
-    refreshLogViewerIfOpen();
-    toast("記録しました");
-    haptic(12);
+  const d = new Date();
+  const e = {
+    ts: d.getTime(),
+    time: nowTimeStr(d),
+    text: t,
+    important: forceImportant ? true : !!incident.importantNext
+  };
+
+  incident.entries = getEntries();
+  incident.entries.push(e);
+  incident.importantNext = false;
+  $("btnToggleImportant").textContent = "重要：OFF";
+  $("btnToggleImportant").classList.remove("bg-amber-400","border-amber-400","text-slate-900");
+  $("btnToggleImportant").classList.add("border");
+
+  $("voiceInputArea").value = "";
+  $("interimText").innerText = "";
+  stopRec();
+
+  saveIncident();
+  renderTimeline();
+  updateIncidentBar();
+}
+
+function renderTimeline(){
+  const wrap = $("timeline");
+  const empty = $("timelineEmpty");
+  wrap.innerHTML = "";
+  const entries = getEntries();
+
+  if(entries.length===0){
+    empty.classList.remove("hidden");
+    wrap.appendChild(empty);
+    return;
   }
-  function findEntryIndex(entries, id){ return entries.findIndex(e=>e.id===id); }
-  function editEntry(id){
-    const entries = getEntries();
-    const idx = findEntryIndex(entries, id);
-    if(idx<0) return;
-    const next = prompt("記録を編集（短くてもOK）", entries[idx].text);
-    if(next===null) return;
-    entries[idx].text = safeText(next);
-    setEntries(entries);
-    refreshTimeline();
-    buildScript();
-    persistIncident();
-    refreshLogViewerIfOpen();
-    toast("編集しました");
-  }
-  function deleteEntry(id){
-    const entries = getEntries();
-    const idx = findEntryIndex(entries, id);
-    if(idx<0) return;
-    const removed = entries.splice(idx,1)[0];
-    setEntries(entries);
-    lastDeleted = { removed, idx };
-    refreshTimeline();
-    buildScript();
-    persistIncident();
-    refreshLogViewerIfOpen();
-    toast("削除しました（取り消し可）");
-    haptic(10);
-  }
-  function toggleImportant(id){
-    const entries = getEntries();
-    const idx = findEntryIndex(entries, id);
-    if(idx<0) return;
-    entries[idx].important = !entries[idx].important;
-    setEntries(entries);
-    refreshTimeline();
-    persistIncident();
-    refreshLogViewerIfOpen();
-  }
-  function renderEntry(entry){
+  empty.classList.add("hidden");
+
+  const list = entries.slice().reverse();
+  list.forEach(e=>{
     const div = document.createElement("div");
-    div.className = "bg-white border rounded-2xl p-3 shadow-sm";
-    div.dataset.id = entry.id;
+    div.className = `flex gap-3 bg-white p-4 rounded-2xl shadow-sm border ${e.important ? "border-amber-300 bg-amber-50" : "border-slate-200"}`;
     div.innerHTML = `
-      <div class="flex items-start gap-3">
-        <div class="shrink-0">
-          <div class="text-blue-600 font-black text-xs">${entry.time}</div>
-          <button class="mt-1 px-2 py-1 rounded-full text-[10px] font-black border ${entry.important ? "bg-yellow-200 border-yellow-300" : "bg-slate-50"}" data-act="imp">
-            ${entry.important ? "★重要" : "☆重要"}
-          </button>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="text-slate-900 text-sm font-black whitespace-pre-wrap break-words" data-role="text">${escapeHtml(entry.text)}</div>
-          <div class="flex items-center gap-2 mt-2">
-            <button class="px-3 py-2 rounded-full text-xs font-black border bg-white active:bg-slate-50" data-act="edit">編集</button>
-            <button class="px-3 py-2 rounded-full text-xs font-black border bg-white active:bg-slate-50" data-act="del">削除</button>
-            <button class="ml-auto px-3 py-2 rounded-full text-xs font-black bg-slate-900 text-white active:scale-[0.99]" data-act="dup">同じ内容</button>
-          </div>
+      <div class="shrink-0">
+        <div class="text-blue-600 font-black text-xs">${e.time}</div>
+        <div class="mt-1 text-[10px] font-black ${e.important ? "text-amber-700" : "text-slate-400"}">${e.important ? "★重要" : ""}</div>
+      </div>
+      <div class="flex-1 text-slate-900 text-sm font-black whitespace-pre-wrap break-words">${escapeHtml(e.text)}</div>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+/* 開始/終了 */
+let incidentTimer = null;
+
+function updateIncidentBar(){
+  const start = incident.startTs;
+  $("incidentStartLabel").textContent = start ? fmtDateTime(start).split(" ").slice(-1)[0] : "--:--";
+
+  const entries = getEntries();
+  $("lastEntryLabel").textContent = entries.length ? entries[entries.length-1].time : "--:--";
+
+  if(incident.active && start){
+    $("incidentElapsedLabel").textContent = msToElapsed(Date.now() - start);
+  }else if(!incident.active && start && incident.endTs){
+    $("incidentElapsedLabel").textContent = msToElapsed(incident.endTs - start);
+  }else{
+    $("incidentElapsedLabel").textContent = "--";
+  }
+
+  $("btnStartIncident").disabled = incident.active;
+  $("btnStartIncident").classList.toggle("opacity-50", incident.active);
+
+  $("btnStopIncident").disabled = !incident.active;
+  $("btnStopIncident").classList.toggle("opacity-50", !incident.active);
+}
+
+function startIncident(){
+  if(incident.active) return;
+  incident.active = true;
+  incident.startTs = incident.startTs || Date.now();
+  incident.endTs = null;
+  saveIncident();
+  addEntry("発生（開始）を記録", true);
+  updateIncidentBar();
+  startIncidentTimer();
+}
+function stopIncident(){
+  if(!incident.active) return;
+  incident.active = false;
+  incident.endTs = Date.now();
+  saveIncident();
+  addEntry("対応終了を記録（引き継ぎ完了など）", true);
+  updateIncidentBar();
+  stopIncidentTimer();
+}
+function startIncidentTimer(){
+  if(incidentTimer) clearInterval(incidentTimer);
+  incidentTimer = setInterval(()=>updateIncidentBar(), 1000);
+}
+function stopIncidentTimer(){
+  if(incidentTimer) clearInterval(incidentTimer);
+  incidentTimer = null;
+}
+
+/* 初動チェック */
+function checklistItems(){
+  return (settings.checkPresets || []).filter(Boolean).slice(0,10);
+}
+function renderChecklist(){
+  const wrap = $("checklist");
+  wrap.innerHTML = "";
+  const items = checklistItems();
+
+  if(items.length===0){
+    wrap.innerHTML = `<div class="text-center text-sm font-black text-slate-400 py-6 border rounded-2xl bg-slate-50">
+      （チェック項目が未設定です。学校情報で入力してください）
+    </div>`;
+    return;
+  }
+
+  items.forEach(label=>{
+    const checked = !!incident.checklist[label];
+    const row = document.createElement("button");
+    row.className = `w-full text-left border rounded-2xl p-3 flex items-start gap-3 ${checked ? "bg-emerald-50 border-emerald-200" : "bg-white border-slate-200"}`;
+    row.innerHTML = `
+      <div class="mt-0.5 w-7 h-7 rounded-xl flex items-center justify-center ${checked ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-500"} font-black text-xs">
+        ${checked ? "✓" : ""}
+      </div>
+      <div class="flex-1">
+        <div class="font-black text-sm text-slate-900">${escapeHtml(label)}</div>
+        <div class="text-[10px] font-black ${checked ? "text-emerald-700" : "text-slate-500"}">
+          ${checked ? "完了（タップで解除）" : "未（タップで完了）"}
         </div>
       </div>
     `;
-    div.addEventListener("click",(e)=>{
-      const btn = e.target.closest("button");
-      if(!btn) return;
-      const act = btn.dataset.act;
-      if(act==="edit") editEntry(entry.id);
-      if(act==="del") deleteEntry(entry.id);
-      if(act==="dup") addEntry(entry.text);
-      if(act==="imp") toggleImportant(entry.id);
-    });
-    return div;
-  }
-  function refreshTimeline(){
-    const box = $("timeline");
-    box.innerHTML = "";
-    const entries = getEntries();
-    if(entries.length===0){
-      $("timelineEmpty").classList.remove("hidden");
-      box.appendChild($("timelineEmpty"));
-      refreshLiveBar();
-      refreshInlineStatus();
-      return;
-    }
-    $("timelineEmpty").classList.add("hidden");
-    entries.slice().reverse().forEach(en=> box.appendChild(renderEntry(en)));
-    refreshLiveBar();
-    refreshInlineStatus();
-  }
-  $("btnAddTimeline").onclick = ()=> addEntry($("voiceInputArea").value);
-  $("btnUndo").onclick = ()=>{
-    if(!lastDeleted){ toast("取り消すものがありません"); return; }
-    const entries = getEntries();
-    entries.splice(lastDeleted.idx, 0, lastDeleted.removed);
-    setEntries(entries);
-    lastDeleted = null;
-    refreshTimeline();
-    persistIncident();
-    refreshLogViewerIfOpen();
-    toast("取り消しました");
-  };
-  document.querySelectorAll("[data-log]").forEach(btn=>{
-    btn.addEventListener("click", ()=> addEntry(btn.dataset.log));
-  });
-
-  // ===== Build Script =====
-  function schoolOpsText(){
-    const a1 = safeText($("aed1").value);
-    const a2 = safeText($("aed2").value);
-    const gateName = safeText($("gateName").value) || "正門";
-    const gateSpot = safeText($("gateSpot").value);
-    const route = safeText($("ambulanceRoute").value);
-    const extS = safeText($("extStaff").value);
-    const extN = safeText($("extNurse").value);
-    const extA = safeText($("extAdmin").value);
-    const parts = [];
-    if(a1 || a2) parts.push(`AED：${[a1,a2].filter(Boolean).join(" / ")}`);
-    if(route) parts.push(`導線：${route}`);
-    if(gateSpot) parts.push(`${gateName}誘導：${gateSpot}`);
-    const extParts = [];
-    if(extS) extParts.push(`職員室${extS}`);
-    if(extN) extParts.push(`保健室${extN}`);
-    if(extA) extParts.push(`管理職${extA}`);
-    if(extParts.length) parts.push(`内線：${extParts.join(" / ")}`);
-    return parts.join("｜") || "（未設定）";
-  }
-
-  function buildScript(){
-    const startLine = incidentStartAt ? `発生：${new Date(incidentStartAt).toLocaleString('ja-JP')}` : `発生：未記録`;
-    const endLine = incidentEndAt ? `終了：${new Date(incidentEndAt).toLocaleString('ja-JP')}` : ``;
-
-    const gateName = safeText($("gateName").value) || "正門";
-    const gateSpot = safeText($("gateSpot").value);
-
-    const script =
-`「救急要請です」
-${startLine}${endLine ? "\n" + endLine : ""}
-
-場所：${$("schoolName").value || "（学校名）"}
-住所：${$("schoolAddr").value || "（学校住所）"}
-校内：${$("place").value || "（校内の場所）"}
-電話：${$("schoolPhone").value || "（電話）"}
-
-対象：${$("pName").value || "（氏名）"}（${gradeLabel()}・${$("pSex").value || "（性別）"}${computedAgeStr!=="--" ? "・" + computedAgeStr : ""}）
-症状：${$("symptom").value || "（症状）"}
-
-学校固有：${schoolOpsText()}
-
-${gateSpot ? `${gateName}（誘導待機）：${gateSpot}` : `${gateName}にて誘導待機します。`}`;
-
-    $("scriptDisplay").innerText = script.trim();
-  }
-
-  // ===== Copy / Share =====
-  async function copyText(text){
-    try{
-      await navigator.clipboard.writeText(text);
-      toast("コピーしました");
-    }catch{
-      const temp=document.createElement("textarea");
-      temp.value=text;
-      document.body.appendChild(temp);
-      temp.select();
-      document.execCommand("copy");
-      temp.remove();
-      toast("コピーしました");
-    }
-  }
-  async function shareText(title,text){
-    if(navigator.share){
-      try{ await navigator.share({title,text}); toast("共有しました"); return; }catch(e){}
-    }
-    await copyText(text);
-    toast("共有できないためコピーしました");
-  }
-
-  function rolesSummaryText(){
-    const roles = getRoles();
-    const parts = ROLE_PRESETS.map(r=>{
-      const v = safeText(roles[r.key]);
-      return v ? `${r.label}：${v}` : "";
-    }).filter(Boolean);
-    return parts.join(" / ") || "（未確定）";
-  }
-
-  function checklistItems(){
-    return (currentCheckPresets || []).filter(Boolean).slice(0,10);
-  }
-
-  function checklistDoneText(){
-    const state = getChecklistState();
-    const done = checklistItems().filter(item => !!state[item]);
-    return done.length ? done.map(x=>"✅ "+x).join("\n") : "（完了なし）";
-  }
-
-  function checklistSummaryText(){
-    const items = checklistItems();
-    const state = getChecklistState();
-    const done = items.filter(x=>!!state[x]);
-    const todo = items.filter(x=>!state[x]);
-    return [
-      `完了：${done.length} / ${items.length}`,
-      ...(done.length ? done.map(x=>"✅ "+x) : ["✅（なし）"]),
-      "",
-      ...(todo.length ? ["未："] : []),
-      ...(todo.length ? todo.map(x=>"□ "+x) : [])
-    ].join("\n");
-  }
-
-  function fullReportText(){
-    const entries = getEntries();
-    const lines = entries.map(e=> `${e.time} ${e.important ? "★ " : ""}${e.text}`);
-    const chk = checklistSummaryText();
-    return [
-      "【救急対応 記録】",
-      `作成：${nowDateTimeStr()}`,
-      "",
-      `学校：${$("schoolName").value || "未設定"}`,
-      `住所：${$("schoolAddr").value || "未設定"}`,
-      `電話：${$("schoolPhone").value || "未設定"}`,
-      `発生場所：${$("place").value || "未入力"}`,
-      `学校固有：${schoolOpsText()}`,
-      "",
-      `傷病者：${$("pName").value || "未入力"}`,
-      `学年等：${gradeLabel()}`,
-      `性別：${$("pSex").value || "-"}`,
-      `年齢：${computedAgeStr}`,
-      `症状：${$("symptom").value || "-"}`,
-      `既往：${$("pHistory").value || "-"}`,
-      `アレルギー：${$("pAllergy").value || "-"}`,
-      "",
-      `【初動チェック】`,
-      chk,
-      "",
-      `【役割分担】`,
-      rolesSummaryText(),
-      "",
-      `開始：${incidentStartAt ? new Date(incidentStartAt).toLocaleString('ja-JP') : "未記録"}`,
-      `終了：${incidentEndAt ? new Date(incidentEndAt).toLocaleString('ja-JP') : "未記録"}`,
-      "",
-      "【時系列】",
-      ...(lines.length ? lines : ["（記録なし）"]),
-    ].join("\n");
-  }
-
-  function teamsPostText(){
-    const start = incidentStartAt ? new Date(incidentStartAt).toLocaleString('ja-JP') : "未記録";
-    const end = incidentEndAt ? new Date(incidentEndAt).toLocaleString('ja-JP') : "未記録";
-    const roles = rolesSummaryText();
-    const place = $("place").value || "未入力";
-    const symptom = $("symptom").value || "確認中";
-    const name = $("pName").value || "未入力";
-    const grade = gradeLabel();
-    const sex = $("pSex").value || "-";
-    const age = computedAgeStr !== "--" ? computedAgeStr : "-";
-    const school = $("schoolName").value || "（学校）";
-    return [
-      "【救急対応 共有】",
-      `学校：${school}`,
-      `開始：${start} / 終了：${end}`,
-      `場所：${place}`,
-      `対象：${name}（${grade}・${sex}・${age}）`,
-      `状況：${symptom}`,
-      `学校固有：${schoolOpsText()}`,
-      `初動チェック：完了${(getChecklistState() ? Object.values(getChecklistState()).filter(Boolean).length : 0)}件`,
-      `役割：${roles}`,
-      "",
-      "※必要に応じて追加対応・引継ぎを行います。"
-    ].join("\n");
-  }
-
-  function downloadBlob(filename, text, type="text/plain"){
-    const blob = new Blob([text], {type});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = filename;
-    document.body.appendChild(a);
-    a.click(); a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  $("btnCopyScript").onclick = ()=> copyText($("scriptDisplay").innerText);
-  $("btnShareScript").onclick = ()=> shareText("119通報用原稿", $("scriptDisplay").innerText);
-  $("btnCopyTimeline").onclick = ()=>{
-    const entries = getEntries();
-    const lines = entries.map(e=> `${e.time} ${e.important ? "★ " : ""}${e.text}`);
-    copyText(lines.join("\n") || "（記録なし）");
-  };
-  $("btnExportTxt").onclick = ()=>{
-    const name = ($("pName").value || "report").replace(/\s+/g,"_");
-    downloadBlob(`emergency_${name}_${Date.now()}.txt`, fullReportText(), "text/plain");
-    toast("TXTを書き出しました");
-  };
-  $("btnExportJson").onclick = ()=>{
-    const obj = loadIncidentRaw() || {};
-    downloadBlob(`emergency_data_${Date.now()}.json`, JSON.stringify(obj, null, 2), "application/json");
-    toast("JSONを書き出しました");
-  };
-  $("btnShareAll").onclick = ()=> shareText("救急対応 記録", fullReportText());
-  $("btnCopyTeams").onclick = ()=> copyText(teamsPostText());
-  $("btnShareTeams").onclick = ()=> shareText("Teams投稿文", teamsPostText());
-
-  // ===== Print =====
-  $("btnPrint").onclick = ()=>{
-    $("printTimestamp").innerText = `作成：${nowDateTimeStr()}`;
-    $("p_schoolName").innerText = $("schoolName").value || "未設定";
-    $("p_schoolAddrPhone").innerText = `${$("schoolAddr").value || "未設定"} / ${$("schoolPhone").value || "未設定"}`;
-    $("p_place").innerText = $("place").value || "未入力";
-    $("p_name").innerText = $("pName").value || "未入力";
-    $("p_gradeSexAge").innerText = `${gradeLabel()} / ${$("pSex").value || "-"} / ${computedAgeStr}`;
-
-    let med = `【症状】${$("symptom").value || "未入力"}`;
-    if($("pHistory").value) med += `　【既往】${$("pHistory").value}`;
-    if($("pAllergy").value) med += `　【アレルギー】${$("pAllergy").value}`;
-    $("p_med").innerText = med;
-
-    $("p_schoolOps").innerText = schoolOpsText();
-    $("p_roles").innerText = rolesSummaryText();
-    $("p_checklist").innerText = checklistDoneText();
-    $("p_start").innerText = incidentStartAt ? new Date(incidentStartAt).toLocaleString('ja-JP') : "未記録";
-    $("p_end").innerText = incidentEndAt ? new Date(incidentEndAt).toLocaleString('ja-JP') : "未記録";
-
-    const entries = getEntries();
-    const container = $("p_timeline");
-    container.innerHTML = "";
-    if(entries.length===0){
-      container.innerHTML = `<div class="print-row text-sm text-gray-500">記録はありません</div>`;
-    }else{
-      entries.forEach(e=>{
-        const row = document.createElement("div");
-        row.className = "print-row flex gap-3";
-        row.innerHTML = `<div class="w-16 font-bold">${e.time}</div><div class="flex-1 text-sm">${escapeHtml((e.important ? "★ " : "") + e.text)}</div>`;
-        container.appendChild(row);
-      });
-    }
-    window.print();
-  };
-
-  // ===== Start/Stop =====
-  function updateStartStopUI(){
-    const started = !!incidentStartAt;
-    const ended = !!incidentEndAt;
-
-    const state = $("stateBadge");
-    if(!started){
-      state.textContent="未開始";
-      state.className="px-2 py-1 rounded-full bg-slate-200 text-slate-800 text-[10px] font-black";
-    }else if(started && !ended){
-      state.textContent="対応中";
-      state.className="px-2 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-black";
-    }else{
-      state.textContent="終了";
-      state.className="px-2 py-1 rounded-full bg-slate-900 text-white text-[10px] font-black";
-    }
-
-    $("btnMarkStart").disabled = started && !ended;
-    $("btnMarkStart").classList.toggle("opacity-50", started && !ended);
-    $("btnMarkEnd").disabled = !started || ended;
-    $("btnMarkEnd").classList.toggle("opacity-50", !started || ended);
-
-    const big = $("btnBigStartStop");
-    if(!started){
-      big.textContent="開始";
-      big.className="py-3 rounded-2xl bg-emerald-600 text-white font-black text-xs active:scale-[0.99]";
-    }else if(started && !ended){
-      big.textContent="停止";
-      big.className="py-3 rounded-2xl bg-red-600 text-white font-black text-xs active:scale-[0.99]";
-    }else{
-      big.textContent="再開";
-      big.className="py-3 rounded-2xl bg-amber-500 text-white font-black text-xs active:scale-[0.99]";
-    }
-
-    $("liveState").textContent = state.textContent;
-    $("stateInline").textContent = state.textContent;
-    refreshInlineStatus();
-  }
-
-  $("btnMarkStart").onclick = ()=>{
-    if(incidentStartAt && !incidentEndAt){ toast("すでに開始は記録済み"); return; }
-    incidentStartAt = Date.now();
-    incidentEndAt = null;
-    persistIncident();
-    addEntry("発生（開始）を記録");
-    buildScript();
-    updateStartStopUI();
-  };
-  $("btnMarkEnd").onclick = ()=>{
-    if(!incidentStartAt){ toast("開始が未記録です"); return; }
-    if(incidentEndAt){ toast("すでに終了は記録済み"); return; }
-    incidentEndAt = Date.now();
-    persistIncident();
-    addEntry("停止（終了）を記録");
-    buildScript();
-    updateStartStopUI();
-  };
-  $("btnBigStartStop").onclick = ()=>{
-    if(!incidentStartAt){ $("btnMarkStart").click(); return; }
-    if(incidentStartAt && !incidentEndAt){ $("btnMarkEnd").click(); return; }
-    const ok = confirm("終了済みの対応を「再開」しますか？\n（終了時刻は消え、継続して記録できます）");
-    if(!ok) return;
-    incidentEndAt = null;
-    persistIncident();
-    addEntry("対応を再開");
-    updateStartStopUI();
-  };
-
-  function tickElapsed(){
-    const badge = $("elapsedBadge");
-    if(!incidentStartAt){
-      badge.textContent="--:--";
-      $("elapsedInline").textContent="--:--";
-      return;
-    }
-    const end = incidentEndAt ? incidentEndAt : Date.now();
-    const diff = end - incidentStartAt;
-    const m = Math.floor(diff/60000);
-    const s = Math.floor((diff%60000)/1000);
-    const txt = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    badge.textContent = txt;
-    $("elapsedInline").textContent = txt;
-  }
-  setInterval(tickElapsed, 1000);
-
-  // ===== Live Bar / inline status =====
-  function countAssignedRoles(roles){
-    return Object.values(roles||{}).filter(v=>safeText(v)).length;
-  }
-  function refreshRolesBadge(){
-    const roles = getRoles();
-    $("rolesBadge").textContent = `役割:${countAssignedRoles(roles)}`;
-  }
-  function refreshLiveBar(){
-    const entries = getEntries();
-    const roles = getRoles();
-    $("liveCount").textContent = String(entries.length);
-    $("liveRoles").textContent = String(countAssignedRoles(roles));
-
-    if(entries.length===0){
-      $("liveTime").textContent="--:--";
-      $("liveText").textContent="（記録なし）";
-      return;
-    }
-    const last = entries[entries.length-1];
-    $("liveTime").textContent = last.time || "--:--";
-    $("liveText").textContent = last.text || "";
-  }
-  function refreshInlineStatus(){
-    const entries = getEntries();
-    $("countInline").textContent = String(entries.length);
-    if(entries.length===0){
-      $("latestInline").textContent = "（記録なし）";
-      return;
-    }
-    $("latestInline").textContent = entries[entries.length-1].text || "";
-  }
-  $("liveBar").onclick = ()=>{ setStepActive(3); scrollToSection("#logSection"); };
-
-  // ===== Quick Sheet =====
-  function openQuickSheet(){ $("quickSheetWrap").classList.remove("hidden"); haptic(8); }
-  function closeQuickSheet(){ $("quickSheetWrap").classList.add("hidden"); }
-  $("btnOpenQuickSheet").onclick = openQuickSheet;
-  $("btnCloseQuickSheet").onclick = closeQuickSheet;
-  $("sheetBackdrop").onclick = closeQuickSheet;
-  $("btnQuickToLog").onclick = ()=>{ closeQuickSheet(); setStepActive(3); scrollToSection("#logSection"); };
-
-  $("btnLogAed").onclick = ()=>{
-    const a1 = safeText($("aed1").value);
-    const a2 = safeText($("aed2").value);
-    addEntry(`AED搬送：${[a1,a2].filter(Boolean).join(" / ") || "（場所未設定）"} から搬送開始`);
-  };
-  $("btnLogGate").onclick = ()=>{
-    const gateName = safeText($("gateName").value) || "正門";
-    const gateSpot = safeText($("gateSpot").value);
-    addEntry(`正門誘導：${gateName}${gateSpot ? "（" + gateSpot + "）" : ""} にて待機・誘導`);
-  };
-
-  // ===== Role Sheet =====
-  function openRoleSheet(){ $("roleSheetWrap").classList.remove("hidden"); renderRoleBoard(); haptic(8); }
-  function closeRoleSheet(){ $("roleSheetWrap").classList.add("hidden"); }
-  $("btnOpenRoleBoard").onclick = openRoleSheet;
-  $("btnCloseRoleSheet").onclick = closeRoleSheet;
-  $("roleBackdrop").onclick = closeRoleSheet;
-  $("btnRoleToLog").onclick = ()=>{ closeRoleSheet(); setStepActive(3); scrollToSection("#logSection"); };
-
-  function renderRoleBoard(){
-    const roles = getRoles();
-    const list = $("roleList");
-    list.innerHTML = "";
-    ROLE_PRESETS.forEach(r=>{
-      const assigned = safeText(roles[r.key]);
-      const row = document.createElement("div");
-      row.className = "border rounded-2xl p-3 bg-slate-50";
-      row.innerHTML = `
-        <div class="flex items-center justify-between gap-2">
-          <div class="min-w-0">
-            <div class="font-black text-slate-900 text-sm">${r.label}</div>
-            <div class="text-[10px] font-bold text-slate-500">${r.hint}</div>
-          </div>
-          <div class="text-[10px] font-black ${assigned ? "text-emerald-700" : "text-slate-400"}">${assigned ? "確定済" : "未確定"}</div>
-        </div>
-        <div class="grid grid-cols-3 gap-2 mt-2">
-          <input data-rolekey="${r.key}" class="roleName col-span-2 w-full p-3 bg-white border rounded-xl text-sm font-black" placeholder="担当者名（例：〇〇）" value="${assigned ? escapeHtml(assigned) : ""}">
-          <button data-act="confirm" data-rolekey="${r.key}" class="py-3 rounded-2xl ${assigned ? "bg-emerald-600 text-white" : "bg-slate-900 text-white"} text-xs font-black active:scale-[0.99]">
-            ${assigned ? "更新" : "確定"}
-          </button>
-        </div>
-        <div class="grid grid-cols-2 gap-2 mt-2">
-          <button data-act="logOnly" data-rolekey="${r.key}" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50">記録だけ</button>
-          <button data-act="clear" data-rolekey="${r.key}" class="py-3 rounded-2xl bg-white border text-xs font-black active:bg-slate-50">解除</button>
-        </div>
-      `;
-      row.addEventListener("click",(e)=>{
-        const btn = e.target.closest("button");
-        if(!btn) return;
-        const act = btn.dataset.act;
-        const key = btn.dataset.rolekey;
-        const input = row.querySelector(`input[data-rolekey="${key}"]`);
-        const name = safeText(input.value);
-        const rolesNow = getRoles();
-
-        if(act==="confirm"){
-          if(!name){ toast("担当者名を入れてください"); haptic(10); return; }
-          rolesNow[key] = name;
-          setRoles(rolesNow);
-          addEntry(`役割確定：${ROLE_PRESETS.find(x=>x.key===key).label}＝${name}`);
-          toast("役割を確定しました");
-          renderRoleBoard();
-          return;
-        }
-        if(act==="logOnly"){
-          addEntry(`役割：${ROLE_PRESETS.find(x=>x.key===key).label}${name ? "（" + name + "）" : ""}`);
-          toast("役割を記録しました");
-          return;
-        }
-        if(act==="clear"){
-          delete rolesNow[key];
-          setRoles(rolesNow);
-          addEntry(`役割解除：${ROLE_PRESETS.find(x=>x.key===key).label}`);
-          toast("解除しました");
-          renderRoleBoard();
-          return;
-        }
-      });
-      list.appendChild(row);
-    });
-    refreshRolesBadge();
-    refreshLiveBar();
-  }
-
-  $("btnRoleAutoFill").onclick = ()=>{
-    const main = safeText($("nurseName").value) || "（未入力）";
-    document.querySelectorAll(".roleName").forEach(inp=>{
-      if(!safeText(inp.value)) inp.value = main;
-    });
-    toast("入力補助しました（必要に応じて修正）");
-  };
-  $("btnRoleClear").onclick = ()=>{
-    const ok = confirm("役割分担を全解除します。よろしいですか？");
-    if(!ok) return;
-    setRoles({});
-    addEntry("役割分担：全解除");
-    renderRoleBoard();
-    toast("全解除しました");
-  };
-
-  // ===== Checklist (school-specific max 10) =====
-  function renderChecklist(){
-    const items = checklistItems();
-    const wrap = $("checklist");
-    const state = getChecklistState();
-    wrap.innerHTML = "";
-
-    if(items.length===0){
-      const p = document.createElement("div");
-      p.className = "text-center text-sm font-black text-slate-400 py-6 border rounded-2xl bg-slate-50";
-      p.textContent = "（チェック項目が未設定です。設定から入力してください）";
-      wrap.appendChild(p);
-      return;
-    }
-
-    items.forEach((label)=>{
-      const checked = !!state[label];
-      const row = document.createElement("button");
-      row.className = `w-full text-left border rounded-2xl p-3 flex items-start gap-3 active:bg-slate-50 ${checked ? "bg-emerald-50 border-emerald-200" : "bg-white"}`;
-      row.innerHTML = `
-        <div class="mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center ${checked ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-500"} font-black text-xs">
-          ${checked ? "✓" : ""}
-        </div>
-        <div class="flex-1">
-          <div class="font-black text-sm text-slate-900">${escapeHtml(label)}</div>
-          <div class="text-[10px] font-bold ${checked ? "text-emerald-700" : "text-slate-500"}">${checked ? "完了（タップで解除）" : "未（タップで完了）"}</div>
-        </div>
-      `;
-      row.onclick = ()=>{
-        const st = getChecklistState();
-        st[label] = !st[label];
-        setChecklistState(st);
-        renderChecklist();
-        addEntry((st[label] ? "初動チェック完了： " : "初動チェック解除： ") + label);
-        toast(st[label] ? "チェックしました" : "解除しました");
-      };
-      wrap.appendChild(row);
-    });
-  }
-
-  $("btnChecklistReset").onclick = ()=>{
-    const ok = confirm("チェックをすべて解除します。よろしいですか？");
-    if(!ok) return;
-    setChecklistState({});
-    renderChecklist();
-    addEntry("初動チェック：全解除");
-    toast("全解除しました");
-  };
-  $("btnCopyChecklist").onclick = ()=> copyText(checklistSummaryText());
-
-  // ===== Settings save/load =====
-  function applyDefaultCasesToInputs(){
-    const inputs = document.querySelectorAll(".casePreset");
-    inputs.forEach((inp, idx)=> inp.value = DEFAULT_CASES[idx] || "");
-  }
-  function applyDefaultChecksToInputs(){
-    const inputs = document.querySelectorAll(".checkPreset");
-    inputs.forEach((inp, idx)=> inp.value = DEFAULT_CHECKS[idx] || "");
-  }
-
-  function getCasePresetsFromUI(){
-    const arr = [];
-    document.querySelectorAll(".casePreset").forEach(inp=>{
-      const v = safeText(inp.value);
-      if(v) arr.push(v);
-    });
-    return arr.slice(0,10);
-  }
-  function getCheckPresetsFromUI(){
-    const arr = [];
-    document.querySelectorAll(".checkPreset").forEach(inp=>{
-      const v = safeText(inp.value);
-      if(v) arr.push(v);
-    });
-    return arr.slice(0,10);
-  }
-
-  function buildCaseChips(cases){
-    const box = $("caseChips");
-    box.innerHTML = "";
-    const list = (cases || []).filter(Boolean).slice(0,10);
-    if(list.length===0){
-      const p = document.createElement("div");
-      p.className="col-span-2 text-center text-xs font-black text-slate-400 py-4 border rounded-2xl bg-slate-50";
-      p.textContent="（設定にケースを入力するとここにボタンが出ます）";
-      box.appendChild(p);
-      return;
-    }
-    list.forEach(txt=>{
-      const b = document.createElement("button");
-      b.className="chip rounded-2xl bg-white border text-slate-900 text-xs font-black";
-      b.textContent = txt;
-      b.onclick = ()=>{
-        const cur = safeText($("symptom").value);
-        $("symptom").value = cur ? (cur + " / " + txt) : txt;
-        addEntry("ケース： " + txt);
-        buildScript();
-        persistIncident();
-        toast("ケースを記録しました");
-      };
-      box.appendChild(b);
-    });
-  }
-
-  $("btnRestoreDefaultCases").onclick = ()=>{
-    applyDefaultCasesToInputs();
-    currentCasePresets = getCasePresetsFromUI();
-    buildCaseChips(currentCasePresets);
-    toast("初期セットに戻しました（保存すると反映）");
-  };
-  $("btnClearCases").onclick = ()=>{
-    document.querySelectorAll(".casePreset").forEach(inp=> inp.value="");
-    currentCasePresets = [];
-    buildCaseChips([]);
-    toast("ケースを空にしました（保存すると反映）");
-  };
-
-  $("btnRestoreDefaultChecks").onclick = ()=>{
-    applyDefaultChecksToInputs();
-    currentCheckPresets = getCheckPresetsFromUI();
-    renderChecklist();
-    toast("初期セットに戻しました（保存すると反映）");
-  };
-  $("btnClearChecks").onclick = ()=>{
-    document.querySelectorAll(".checkPreset").forEach(inp=> inp.value="");
-    currentCheckPresets = [];
-    renderChecklist();
-    toast("チェックを空にしました（保存すると反映）");
-  };
-
-  function updateQuickLinks(){
-    const school = safeText($("schoolPhone").value);
-    const admin = safeText($("adminMobile").value);
-    const guard = safeText($("guardianPhone").value);
-    $("btnCallSchool").href = school ? `tel:${school}` : "#";
-    $("btnCallAdmin").href = admin ? `tel:${admin}` : "#";
-    $("btnCallGuardian").href = guard ? `tel:${guard}` : "#";
-  }
-
-  $("btnSaveSettings").onclick = ()=>{
-    const settings = {
-      schoolName: $("schoolName").value,
-      schoolAddr: $("schoolAddr").value,
-      schoolPhone: $("schoolPhone").value,
-      mapUrl: $("mapUrl").value,
-      ambulanceRoute: $("ambulanceRoute").value,
-      aed1: $("aed1").value,
-      aed2: $("aed2").value,
-      gateName: $("gateName").value,
-      gateSpot: $("gateSpot").value,
-      extStaff: $("extStaff").value,
-      extNurse: $("extNurse").value,
-      extAdmin: $("extAdmin").value,
-      nurseName: $("nurseName").value,
-      adminMobile: $("adminMobile").value,
-      guardianPhone: $("guardianPhone").value,
-      casePresets: getCasePresetsFromUI(),
-      checkPresets: getCheckPresetsFromUI()
+    row.onclick = ()=>{
+      incident.checklist[label] = !incident.checklist[label];
+      saveIncident();
+      renderChecklist();
+      addEntry((incident.checklist[label] ? "初動チェック完了： " : "初動チェック解除： ") + label);
     };
-    localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
-    currentCasePresets = settings.casePresets || [];
-    currentCheckPresets = settings.checkPresets || [];
-    buildCaseChips(currentCasePresets);
-    renderChecklist();
-    updateQuickLinks();
-    buildScript();
-    persistIncident();
-    toast("設定を保存しました");
-    haptic(12);
-  };
-
-  $("btnResetSettings").onclick = ()=>{
-    const ok = confirm("学校固有設定を消去します。よろしいですか？");
-    if(!ok) return;
-    localStorage.removeItem(KEY_SETTINGS);
-    ["schoolName","schoolAddr","schoolPhone","mapUrl","ambulanceRoute","aed1","aed2","gateName","gateSpot","extStaff","extNurse","extAdmin","nurseName","adminMobile","guardianPhone"]
-      .forEach(id=> $(id).value="");
-    applyDefaultCasesToInputs();
-    applyDefaultChecksToInputs();
-    currentCasePresets = getCasePresetsFromUI();
-    currentCheckPresets = getCheckPresetsFromUI();
-    buildCaseChips(currentCasePresets);
-    renderChecklist();
-    updateQuickLinks();
-    buildScript();
-    persistIncident();
-    toast("設定を消去しました（初期セットは戻しました）");
-  };
-
-  function loadSettings(){
-    const saved = localStorage.getItem(KEY_SETTINGS);
-    if(!saved){
-      applyDefaultCasesToInputs();
-      applyDefaultChecksToInputs();
-      return { casePresets: getCasePresetsFromUI(), checkPresets: getCheckPresetsFromUI() };
-    }
-    try{
-      const s = JSON.parse(saved);
-      Object.keys(s).forEach(k=>{
-        if($(k)) $(k).value = s[k] ?? "";
-      });
-
-      // cases
-      const cList = Array.isArray(s.casePresets) ? s.casePresets.slice(0,10) : [];
-      const cInputs = document.querySelectorAll(".casePreset");
-      if(cList.length){
-        cInputs.forEach((inp, idx)=> inp.value = cList[idx] || "");
-      }else{
-        applyDefaultCasesToInputs();
-      }
-
-      // checks
-      const ckList = Array.isArray(s.checkPresets) ? s.checkPresets.slice(0,10) : [];
-      const ckInputs = document.querySelectorAll(".checkPreset");
-      if(ckList.length){
-        ckInputs.forEach((inp, idx)=> inp.value = ckList[idx] || "");
-      }else{
-        applyDefaultChecksToInputs();
-      }
-
-      return { casePresets: getCasePresetsFromUI(), checkPresets: getCheckPresetsFromUI() };
-    }catch{
-      applyDefaultCasesToInputs();
-      applyDefaultChecksToInputs();
-      return { casePresets: getCasePresetsFromUI(), checkPresets: getCheckPresetsFromUI() };
-    }
-  }
-
-  // ===== Incident persist/load =====
-  function persistIncident(){
-    const cur = loadIncidentRaw() || {};
-    cur.meta = { updatedAt: Date.now(), startAt: incidentStartAt, endAt: incidentEndAt };
-    cur.form = {
-      place: $("place").value,
-      pName: $("pName").value,
-      pGrade: $("pGrade").value,
-      pSex: $("pSex").value,
-      pBirth: $("pBirth").value,
-      symptom: $("symptom").value,
-      pHistory: $("pHistory").value,
-      pAllergy: $("pAllergy").value,
-      computedAgeStr,
-    };
-    if(!Array.isArray(cur.entries)) cur.entries = [];
-    if(!cur.roles || typeof cur.roles!=="object") cur.roles = {};
-    if(!cur.checklist || typeof cur.checklist!=="object") cur.checklist = {};
-    localStorage.setItem(KEY_INCIDENT, JSON.stringify(cur));
-    updateStartStopUI();
-    refreshRolesBadge();
-    refreshLiveBar();
-    refreshInlineStatus();
-  }
-
-  function loadIncident(){
-    const obj = loadIncidentRaw();
-    if(!obj) return;
-    const form = obj.form || {};
-    ["place","pName","pGrade","pSex","pBirth","symptom","pHistory","pAllergy"].forEach(id=>{
-      if($(id)) $(id).value = form[id] || "";
-    });
-    computedAgeStr = form.computedAgeStr || "--";
-    $("ageDisplay").innerText = `年齢：${computedAgeStr}`;
-    incidentStartAt = obj.meta?.startAt || null;
-    incidentEndAt = obj.meta?.endAt || null;
-  }
-
-  // ===== School quick actions =====
-  $("btnOpenMap").onclick = ()=>{
-    const url = safeText($("mapUrl").value);
-    if(!url){ toast("地図URLが未設定です"); return; }
-    window.open(url, "_blank");
-  };
-  $("btnCopySchoolOps").onclick = ()=>{
-    const txt = `【学校固有】\n${schoolOpsText()}\n学校：${$("schoolName").value || "未設定"}\n住所：${$("schoolAddr").value || "未設定"}\n電話：${$("schoolPhone").value || "未設定"}`;
-    copyText(txt);
-  };
-
-  // ===== Broadcast / Guardian messages =====
-  $("btnCopyBroadcast").onclick = ()=>{
-    const msg =
-`【校内放送（例）】
-こちらは職員室です。
-${$("place").value || "校内"}で対応中です。周囲の児童は距離を取り、担任は落ち着いて誘導してください。
-必要な職員は職員室へ。`;
-    copyText(msg);
-  };
-
-  $("btnCopyGuardianMsg").onclick = ()=>{
-    const msg =
-`【学校からの連絡】${$("schoolName").value || "（学校）"}です。
-お子さんの体調不良/負傷で対応しています。
-状況：${$("symptom").value || "確認中"}
-場所：${$("place").value || "校内"}
-必要に応じて救急要請・医療機関受診を行う可能性があります。
-折り返し：${$("schoolPhone").value || "（学校電話）"}`;
-    copyText(msg);
-  };
-
-  $("btnCopyGuardianTransport").onclick = ()=>{
-    const msg =
-`【学校からの連絡】${$("schoolName").value || "（学校）"}です。
-救急搬送となりました（またはその可能性があります）。
-状況：${$("symptom").value || "確認中"}
-搬送先：確認中（決まり次第お知らせします）
-折り返し：${$("schoolPhone").value || "（学校電話）"}`;
-    copyText(msg);
-  };
-
-  // ===== New incident =====
-  $("btnNewIncident").onclick = ()=>{
-    const ok = confirm("新規対応として記録をリセットします。\n（学校固有設定は残ります／役割・チェック・記録はリセット）\nよろしいですか？");
-    if(!ok) return;
-    localStorage.removeItem(KEY_INCIDENT);
-    incidentStartAt = null;
-    incidentEndAt = null;
-    lastDeleted = null;
-
-    ["place","pName","pGrade","pSex","pBirth","symptom","pHistory","pAllergy"].forEach(id=> $(id).value="");
-    computedAgeStr="--";
-    $("ageDisplay").innerText = `年齢：${computedAgeStr} 歳`;
-    $("voiceInputArea").value = "";
-
-    ensureIncident();
-    setRoles({});
-    setChecklistState({});
-    renderChecklist();
-    persistIncident();
-    refreshTimeline();
-    buildScript();
-    refreshLogViewerIfOpen();
-    toast("新規として開始できます");
-  };
-
-  // ===== Autosave =====
-  let autosaveTimer = null;
-  function scheduleAutosave(){
-    clearTimeout(autosaveTimer);
-    autosaveTimer = setTimeout(()=> persistIncident(), 250);
-  }
-  $("pBirth").addEventListener("change", ()=>{ updateAge(); scheduleAutosave(); });
-  $("pGrade").addEventListener("change", ()=>{ updateAge(); scheduleAutosave(); });
-  document.querySelectorAll("input, textarea, select").forEach(el=>{
-    el.addEventListener("input", ()=>{
-      buildScript();
-      updateQuickLinks();
-      scheduleAutosave();
-    });
+    wrap.appendChild(row);
   });
-
-  // ===== Log Viewer (NEW) =====
-  function openLogViewer(){
-    $("logViewerWrap").classList.remove("hidden");
-    renderLogViewer();
-    haptic(8);
-  }
-  function closeLogViewer(){
-    $("logViewerWrap").classList.add("hidden");
-  }
-  $("btnOpenLogViewer").onclick = openLogViewer;
-  $("btnOpenLogViewer2").onclick = openLogViewer;
-  $("btnCloseLogViewer").onclick = closeLogViewer;
-  $("logViewerBackdrop").onclick = closeLogViewer;
-
-  function entriesToText(entries){
-    const list = entries.map(e=> `${e.time} ${e.important ? "★ " : ""}${e.text}`);
-    return list.join("\n") || "（記録なし）";
-  }
-
-  function filteredEntries(){
-    const q = safeText($("lvSearch").value).toLowerCase();
-    let entries = getEntries().slice();
-    if(lvOnlyImportant){
-      entries = entries.filter(e=>!!e.important);
-    }
-    if(q){
-      entries = entries.filter(e=>{
-        const t = (e.text||"").toLowerCase();
-        const tm = (e.time||"").toLowerCase();
-        return t.includes(q) || tm.includes(q);
-      });
-    }
-    // order
-    entries = lvOrderNewestFirst ? entries.slice().reverse() : entries;
-    return entries;
-  }
-
-  function renderLogViewer(){
-    const list = filteredEntries();
-    $("lvCount").textContent = String(list.length);
-    $("lvOrder").textContent = `表示：${lvOrderNewestFirst ? "新→古" : "古→新"}`;
-    $("lvOnlyImp").textContent = `重要のみ：${lvOnlyImportant ? "ON" : "OFF"}`;
-    $("lvMode").textContent = `表示：${lvMode === "card" ? "カード" : "テキスト"}`;
-
-    const body = $("lvBody");
-    body.innerHTML = "";
-
-    if(lvMode === "text"){
-      const pre = document.createElement("pre");
-      pre.className = "w-full whitespace-pre-wrap break-words text-sm font-black text-slate-900 bg-slate-50 border rounded-2xl p-3";
-      pre.textContent = entriesToText(list);
-      body.appendChild(pre);
-      return;
-    }
-
-    if(list.length===0){
-      const p = document.createElement("div");
-      p.className="text-center text-sm font-black text-slate-400 py-10";
-      p.textContent="（該当する記録がありません）";
-      body.appendChild(p);
-      return;
-    }
-
-    list.forEach(e=>{
-      const card = document.createElement("div");
-      card.className = "bg-white border rounded-2xl p-3 shadow-sm mb-2";
-      card.innerHTML = `
-        <div class="flex items-start gap-3">
-          <div class="shrink-0">
-            <div class="text-blue-600 font-black text-xs">${escapeHtml(e.time||"--:--")}</div>
-            <div class="mt-1 text-[10px] font-black ${e.important ? "text-amber-600" : "text-slate-400"}">${e.important ? "★重要" : ""}</div>
-          </div>
-          <div class="flex-1">
-            <div class="text-sm font-black text-slate-900 whitespace-pre-wrap break-words">${escapeHtml(e.text||"")}</div>
-          </div>
-        </div>
-      `;
-      body.appendChild(card);
-    });
-  }
-
-  function refreshLogViewerIfOpen(){
-    if(!$("logViewerWrap").classList.contains("hidden")){
-      renderLogViewer();
-    }
-  }
-
-  $("lvOrder").onclick = ()=>{ lvOrderNewestFirst = !lvOrderNewestFirst; renderLogViewer(); };
-  $("lvOnlyImp").onclick = ()=>{ lvOnlyImportant = !lvOnlyImportant; renderLogViewer(); };
-  $("lvMode").onclick = ()=>{ lvMode = (lvMode==="card" ? "text" : "card"); renderLogViewer(); };
-  $("lvSearch").addEventListener("input", ()=> renderLogViewer());
-  $("lvCopy").onclick = ()=>{
-    const list = filteredEntries();
-    copyText(entriesToText(list));
-  };
-  $("lvShare").onclick = ()=>{
-    const list = filteredEntries();
-    shareText("救急対応 記録（フィルタ結果）", entriesToText(list));
-  };
-
-  // ===== init =====
-  ensureIncident();
-  const s = loadSettings();
-  currentCasePresets = s.casePresets || [];
-  currentCheckPresets = s.checkPresets || [];
-  loadIncident();
-
-  buildCaseChips(currentCasePresets);
+}
+function resetChecklist(){
+  incident.checklist = {};
+  saveIncident();
   renderChecklist();
-  updateQuickLinks();
+  addEntry("初動チェック：全解除");
+}
 
-  refreshRolesBadge();
-  refreshTimeline();
-  buildScript();
-  updateStartStopUI();
-  tickElapsed();
-  refreshLiveBar();
-  refreshInlineStatus();
+/* 全件ビュー */
+let lvOrderNewestFirst = true;
+let lvOnlyImportant = false;
+let lvMode = "card";
 
-  // Step default
-  setStepActive(1);
+function openLogViewer(){ $("logViewerWrap").classList.remove("hidden"); renderLogViewer(); }
+function closeLogViewer(){ $("logViewerWrap").classList.add("hidden"); }
+function entriesToText(entries){
+  return entries.map(e=>`${e.time} ${e.important ? "★ " : ""}${e.text}`).join("\n") || "（記録なし）";
+}
+function filteredEntries(){
+  const q = ($("lvSearch").value||"").trim().toLowerCase();
+  let entries = getEntries().slice();
+  if(lvOnlyImportant) entries = entries.filter(e=>!!e.important);
+  if(q){
+    entries = entries.filter(e=>{
+      const t=(e.text||"").toLowerCase();
+      const tm=(e.time||"").toLowerCase();
+      return t.includes(q) || tm.includes(q);
+    });
+  }
+  if(lvOrderNewestFirst) entries = entries.slice().reverse();
+  return entries;
+}
+function renderLogViewer(){
+  const list = filteredEntries();
+  $("lvCount").textContent = String(list.length);
+  $("lvOrder").textContent = `表示：${lvOrderNewestFirst ? "新→古" : "古→新"}`;
+  $("lvOnlyImp").textContent = `重要のみ：${lvOnlyImportant ? "ON" : "OFF"}`;
+  $("lvMode").textContent = `表示：${lvMode==="card" ? "カード" : "テキスト"}`;
 
-  // Live refresh
-  setInterval(()=>{ refreshLiveBar(); refreshInlineStatus(); }, 2500);
+  const body = $("lvBody");
+  body.innerHTML = "";
 
-  // ===== extra buttons =====
-  $("btnOpenLogViewer").onclick = openLogViewer;
-  $("btnOpenLogViewer2").onclick = openLogViewer;
+  if(lvMode==="text"){
+    const pre=document.createElement("pre");
+    pre.className="w-full whitespace-pre-wrap break-words text-sm font-black bg-slate-50 border rounded-2xl p-3";
+    pre.textContent = entriesToText(list);
+    body.appendChild(pre);
+    return;
+  }
 
-  // ===== quick sheet close wiring already set =====
+  if(list.length===0){
+    body.innerHTML = `<div class="text-center text-sm font-black text-slate-400 py-10">（該当する記録がありません）</div>`;
+    return;
+  }
+
+  list.forEach(e=>{
+    const card=document.createElement("div");
+    card.className="bg-white border rounded-2xl p-3 shadow-sm mb-2";
+    card.innerHTML = `
+      <div class="flex items-start gap-3">
+        <div class="shrink-0">
+          <div class="text-blue-600 font-black text-xs">${e.time}</div>
+          <div class="mt-1 text-[10px] font-black ${e.important ? "text-amber-600" : "text-slate-400"}">${e.important ? "★重要" : ""}</div>
+        </div>
+        <div class="flex-1 text-sm font-black whitespace-pre-wrap break-words">${escapeHtml(e.text||"")}</div>
+      </div>
+    `;
+    body.appendChild(card);
+  });
+}
+
+/* 音声入力 */
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let isRecording = false;
+
+if(SpeechRecognition){
+  recognition = new SpeechRecognition();
+  recognition.lang = "ja-JP";
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onresult = (event)=>{
+    let interim = "";
+    let final = "";
+    for(let i=event.resultIndex; i<event.results.length; i++){
+      if(event.results[i].isFinal) final += event.results[i][0].transcript;
+      else interim += event.results[i][0].transcript;
+    }
+    if(final) $("voiceInputArea").value += final;
+    $("interimText").innerText = interim;
+  };
+  recognition.onend = ()=>{ if(isRecording) recognition.start(); };
+}
+function startRec(){
+  if(!recognition) return alert("この端末/ブラウザは音声入力に未対応です");
+  isRecording = true; recognition.start();
+  $("pulseRing").classList.remove("hidden");
+  $("btnVoiceRec").classList.replace("bg-blue-600","bg-red-600");
+  $("micText").innerText = "REC ON";
+}
+function stopRec(){
+  isRecording = false;
+  try{ if(recognition) recognition.stop(); }catch(e){}
+  $("pulseRing").classList.add("hidden");
+  $("btnVoiceRec").classList.remove("bg-red-600");
+  $("btnVoiceRec").classList.add("bg-blue-600");
+  $("micText").innerText = "REC START";
+  $("interimText").innerText = "";
+}
+$("btnVoiceRec").onclick = ()=> isRecording ? stopRec() : startRec();
+
+/* 印刷 */
+$("btnPrint").onclick = ()=>{
+  $("printTimestamp").innerText = `作成日：${new Date().toLocaleString("ja-JP")}`;
+
+  const schoolLine = `${$("schoolName").value || "未設定"} / ${$("schoolAddr").value || "住所未設定"} / ${$("schoolPhone").value || "電話未設定"}`;
+  $("printSchoolInfo").innerText = schoolLine;
+
+  const start = incident.startTs ? fmtDateTime(incident.startTs) : "未記録";
+  const end   = incident.endTs ? fmtDateTime(incident.endTs) : (incident.active ? "継続中" : "未記録");
+  const elapsed = (incident.startTs && (incident.endTs || incident.active))
+    ? msToElapsed((incident.endTs || Date.now()) - incident.startTs)
+    : "--";
+  $("printIncidentInfo").innerText = `開始：${start} / 終了：${end} / 経過：${elapsed}`;
+
+  const gradeVal = $("pGrade").value || "-";
+  const gradeStr = String(gradeVal).match(/^\d$/) ? `${gradeVal}年` : gradeVal;
+  const pInfo = `${$("pName").value || "氏名未詳"} / ${gradeStr} / ${$("pSex").value || "-"} / ${incident.computedAgeStr || "--"}歳`;
+  $("printPatientInfo").innerText = pInfo;
+
+  let medInfo = `【症状】${$("symptom").value || "未入力"}`;
+  if($("pHistory").value) medInfo += `  【既往】${$("pHistory").value}`;
+  if($("pAllergy").value) medInfo += `  【アレルギー】${$("pAllergy").value}`;
+  $("printMedicalInfo").innerText = medInfo;
+
+  const items = checklistItems();
+  if(items.length===0){
+    $("printChecklist").innerText = "（未設定）";
+  }else{
+    const ok = items.filter(x=>incident.checklist[x]);
+    const ng = items.filter(x=>!incident.checklist[x]);
+    $("printChecklist").innerHTML =
+      `<div><b>完了：</b>${ok.length ? ok.join(" / ") : "なし"}</div>` +
+      `<div><b>未：</b>${ng.length ? ng.join(" / ") : "なし"}</div>`;
+  }
+
+  const container = $("printTimeline");
+  container.innerHTML = "";
+  const entries = getEntries();
+  if(entries.length===0){
+    container.innerHTML = "<p class='py-4 text-center text-sm text-gray-400'>記録はありません</p>";
+  }else{
+    entries.forEach(e=>{
+      const row = document.createElement("div");
+      row.className = "flex border-b border-gray-300 py-2 timeline-item";
+      row.innerHTML = `<div class="w-24 font-bold text-sm">${e.time}${e.important ? " ★" : ""}</div><div class="flex-1 text-sm">${escapeHtml(e.text)}</div>`;
+      container.appendChild(row);
+    });
+  }
+
+  window.print();
+};
+
+/* ボタン wiring */
+$("btnAddTimeline").onclick = ()=> addEntry($("voiceInputArea").value);
+
+document.querySelectorAll(".quick-tag").forEach(btn=>{
+  btn.onclick = ()=> addEntry(btn.dataset.val);
+});
+
+$("btnToggleImportant").onclick = ()=>{
+  incident.importantNext = !incident.importantNext;
+  $("btnToggleImportant").textContent = incident.importantNext ? "重要：ON" : "重要：OFF";
+  if(incident.importantNext){
+    $("btnToggleImportant").classList.add("bg-amber-400","border-amber-400","text-slate-900");
+    $("btnToggleImportant").classList.remove("border");
+  }else{
+    $("btnToggleImportant").classList.remove("bg-amber-400","border-amber-400","text-slate-900");
+    $("btnToggleImportant").classList.add("border");
+  }
+  saveIncident();
+};
+
+$("btnCopyTimeline").onclick = ()=> copyText(entriesToText(getEntries()));
+$("btnCopyScript").onclick = ()=> copyText($("scriptDisplay").innerText);
+$("btnShareScript").onclick = ()=> shareText("119通報用原稿", $("scriptDisplay").innerText);
+
+$("btnStartIncident").onclick = startIncident;
+$("btnStopIncident").onclick = stopIncident;
+
+$("btnResetAll").onclick = ()=>{
+  const ok = confirm("全消去します。\n（記録・チェック・入力内容が端末から消えます）\nよろしいですか？");
+  if(!ok) return;
+  incident = {
+    active:false, startTs:null, endTs:null,
+    importantNext:false,
+    entries:[],
+    checklist:{},
+    form:{ place:"", pName:"", pGrade:"", pSex:"", pBirth:"", symptom:"", pHistory:"", pAllergy:"" },
+    computedAgeStr:"--"
+  };
+  saveIncident();
+  loadIncident();
+  stopIncidentTimer();
+  alert("消去しました。");
+};
+
+$("btnChecklistReset").onclick = resetChecklist;
+
+$("btnCopyChecklist").onclick = ()=>{
+  const items = checklistItems();
+  if(items.length===0) return copyText("（初動チェック：未設定）");
+
+  const ok = items.filter(x=>incident.checklist[x]);
+  const ng = items.filter(x=>!incident.checklist[x]);
+  const txt = `【初動チェック】\n完了：${ok.length ? ok.join(" / ") : "なし"}\n未：${ng.length ? ng.join(" / ") : "なし"}`;
+  copyText(txt);
+};
+
+$("btnSaveSettings").onclick = ()=>{
+  saveSettings();
+  loadSettings();
+  renderChecklist();
+  alert("保存しました。");
+};
+
+$("btnExportSettings").onclick = async ()=>{
+  saveSettings();
+  const pack = {
+    version:"v13",
+    school: settings.schoolName || "",
+    addr: settings.schoolAddr || "",
+    phone: settings.schoolPhone || "",
+    casePresets: settings.casePresets || [],
+    checkPresets: settings.checkPresets || []
+  };
+  const txt = `【救急要請サポート 設定（v13）】\n` + JSON.stringify(pack, null, 2);
+  await shareText("救急要請サポート 設定（v13）", txt);
+};
+
+$("btnRestoreDefaultCases").onclick = ()=>{
+  document.querySelectorAll(".casePreset").forEach((inp,idx)=> inp.value = DEFAULT_CASES[idx] || "");
+};
+$("btnClearCases").onclick = ()=> document.querySelectorAll(".casePreset").forEach(inp=> inp.value = "");
+
+$("btnRestoreDefaultChecks").onclick = ()=>{
+  document.querySelectorAll(".checkPreset").forEach((inp,idx)=> inp.value = DEFAULT_CHECKS[idx] || "");
+};
+$("btnClearChecks").onclick = ()=> document.querySelectorAll(".checkPreset").forEach(inp=> inp.value = "");
+
+$("btnCasesHint").onclick = ()=> { toggleCollapse("schoolPanel"); $("schoolPanel").scrollIntoView({behavior:"smooth", block:"start"}); };
+$("btnChecklistSettingsHint").onclick = ()=> { switchTab(1); toggleCollapse("schoolPanel"); $("schoolPanel").scrollIntoView({behavior:"smooth", block:"start"}); };
+$("btnOpenSettings").onclick = ()=> { switchTab(1); toggleCollapse("schoolPanel"); $("schoolPanel").scrollIntoView({behavior:"smooth", block:"start"}); };
+
+/* Log viewer */
+$("btnOpenLogViewer").onclick = openLogViewer;
+$("btnCloseLogViewer").onclick = closeLogViewer;
+$("logViewerBackdrop").onclick = closeLogViewer;
+$("lvSearch").addEventListener("input", renderLogViewer);
+$("lvOrder").onclick = ()=>{ lvOrderNewestFirst=!lvOrderNewestFirst; renderLogViewer(); };
+$("lvOnlyImp").onclick = ()=>{ lvOnlyImportant=!lvOnlyImportant; renderLogViewer(); };
+$("lvMode").onclick = ()=>{ lvMode = (lvMode==="card" ? "text" : "card"); renderLogViewer(); };
+$("lvCopy").onclick = ()=> copyText(entriesToText(filteredEntries()));
+$("lvShare").onclick = ()=> shareText("救急対応 記録（フィルタ結果）", entriesToText(filteredEntries()));
+
+/* 入力の自動保存 */
+$("pBirth").onchange = updateAge;
+$("pGrade").onchange = updateAge;
+
+document.querySelectorAll("input, textarea, select").forEach(el=>{
+  el.addEventListener("input", ()=>{
+    if(el.classList.contains("casePreset") || el.classList.contains("checkPreset")) return;
+    buildScript();
+    saveIncident();
+  });
+});
+
+/* 初期化 */
+loadSettings();
+loadIncident();
+if(incident.active && incident.startTs) startIncidentTimer();
+updateAge();
+buildScript();
+renderCaseButtons();
 </script>
-
 </body>
 </html>
