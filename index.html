@@ -286,6 +286,11 @@
               </div>
             </div>
 
+ <div class="text-[11px] font-bold text-slate-500">
+              例：<span class="font-black">意識あり|意識あり（明瞭）</span>（表示＝左、記録＝右）
+            </div>
+          </div>
+            
             <div class="space-y-2">
               <div class="text-xs font-black text-slate-800">SYMPTOMS / 全身症状</div>
               <div class="grid grid-cols-1 gap-2">
@@ -306,6 +311,11 @@
               </div>
             </div>
 
+ <div class="text-[11px] font-bold text-slate-500">
+              例：<span class="font-black">意識あり|意識あり（明瞭）</span>（表示＝左、記録＝右）
+            </div>
+          </div>
+            
             <div class="space-y-2">
               <div class="text-xs font-black text-green-700">TREATMENT / 処置内容</div>
               <div class="grid grid-cols-1 gap-2">
@@ -1075,6 +1085,18 @@ function saveSettings(){
   localStorage.setItem(SETTINGS_KEY_V18, JSON.stringify(settings));
 }
 
+/* ===== 修正: 設定プリセット変更（編集/空/初期値）を即時反映 ===== */
+function previewPresetChanges(){
+  settings.casePresets = compactListFromInputs(".casePreset");
+  settings.checkPresets = compactListFromInputs(".checkPreset");
+  settings.quickStatus = compactListFromInputs(".quickStatusPreset");
+  settings.quickSymptoms = compactListFromInputs(".quickSymptomsPreset");
+  settings.quickTreatment = compactListFromInputs(".quickTreatmentPreset");
+  renderCaseButtons();
+  renderChecklist();
+  renderQuickButtons();
+}
+
 /* ===================== settings CSV export/import ===================== */
 function settingsToCSV(){
   const rows = [];
@@ -1539,7 +1561,7 @@ function voiceSupportedHint(){
   if(SpeechRecognition && isSecure() && !isIOS()){
     el.textContent = "✅ 音声入力ができない場合は下の「キーボードのマイク」から";
   }else{
-    el.textContent = "※ うまく動かない場合は下の「キーボードのマイク」で入力";
+    el.textContent = "✅ 音声入力ができない場合は下の「キーボードのマイク」から";
   }
 }
 
@@ -2074,7 +2096,7 @@ $("btnResetAll").onclick = ()=>{
     form:{ place:"", pName:"", pGrade:"", pSex:"", pBirth:"", symptom:"", pHistory:"", pAllergy:"" },
     computedAgeStr:"--"
   };
-  saveIncident();
+  localStorage.setItem(INCIDENT_KEY_V18, JSON.stringify(incident));
   loadIncident();
   stopIncidentTimer();
   if(!$("logViewerWrap")?.classList.contains("hidden")) renderLogViewer();
@@ -2116,20 +2138,20 @@ $("btnExportSettings").onclick = async ()=>{
   await shareText("救急要請サポート 設定（v18）", txt);
 };
 
-$("btnRestoreDefaultCases").onclick = ()=> document.querySelectorAll(".casePreset").forEach((inp,idx)=> inp.value = DEFAULT_CASES[idx] || "");
-$("btnClearCases").onclick = ()=> document.querySelectorAll(".casePreset").forEach(inp=> inp.value = "");
+$("btnRestoreDefaultCases").onclick = ()=>{ document.querySelectorAll(".casePreset").forEach((inp,idx)=> inp.value = DEFAULT_CASES[idx] || ""); previewPresetChanges(); };
+$("btnClearCases").onclick = ()=>{ document.querySelectorAll(".casePreset").forEach(inp=> inp.value = ""); previewPresetChanges(); };
 
-$("btnRestoreDefaultChecks").onclick = ()=> document.querySelectorAll(".checkPreset").forEach((inp,idx)=> inp.value = DEFAULT_CHECKS[idx] || "");
-$("btnClearChecks").onclick = ()=> document.querySelectorAll(".checkPreset").forEach(inp=> inp.value = "");
+$("btnRestoreDefaultChecks").onclick = ()=>{ document.querySelectorAll(".checkPreset").forEach((inp,idx)=> inp.value = DEFAULT_CHECKS[idx] || ""); previewPresetChanges(); };
+$("btnClearChecks").onclick = ()=>{ document.querySelectorAll(".checkPreset").forEach(inp=> inp.value = ""); previewPresetChanges(); };
 
-$("btnRestoreDefaultQuickStatus").onclick = ()=> document.querySelectorAll(".quickStatusPreset").forEach((inp,idx)=> inp.value = DEFAULT_QUICK_STATUS[idx] || "");
-$("btnClearQuickStatus").onclick = ()=> document.querySelectorAll(".quickStatusPreset").forEach(inp=> inp.value = "");
+$("btnRestoreDefaultQuickStatus").onclick = ()=>{ document.querySelectorAll(".quickStatusPreset").forEach((inp,idx)=> inp.value = DEFAULT_QUICK_STATUS[idx] || ""); previewPresetChanges(); };
+$("btnClearQuickStatus").onclick = ()=>{ document.querySelectorAll(".quickStatusPreset").forEach(inp=> inp.value = ""); previewPresetChanges(); };
 
-$("btnRestoreDefaultQuickSymptoms").onclick = ()=> document.querySelectorAll(".quickSymptomsPreset").forEach((inp,idx)=> inp.value = DEFAULT_QUICK_SYMPTOMS[idx] || "");
-$("btnClearQuickSymptoms").onclick = ()=> document.querySelectorAll(".quickSymptomsPreset").forEach(inp=> inp.value = "");
+$("btnRestoreDefaultQuickSymptoms").onclick = ()=>{ document.querySelectorAll(".quickSymptomsPreset").forEach((inp,idx)=> inp.value = DEFAULT_QUICK_SYMPTOMS[idx] || ""); previewPresetChanges(); };
+$("btnClearQuickSymptoms").onclick = ()=>{ document.querySelectorAll(".quickSymptomsPreset").forEach(inp=> inp.value = ""); previewPresetChanges(); };
 
-$("btnRestoreDefaultQuickTreatment").onclick = ()=> document.querySelectorAll(".quickTreatmentPreset").forEach((inp,idx)=> inp.value = DEFAULT_QUICK_TREATMENT[idx] || "");
-$("btnClearQuickTreatment").onclick = ()=> document.querySelectorAll(".quickTreatmentPreset").forEach(inp=> inp.value = "");
+$("btnRestoreDefaultQuickTreatment").onclick = ()=>{ document.querySelectorAll(".quickTreatmentPreset").forEach((inp,idx)=> inp.value = DEFAULT_QUICK_TREATMENT[idx] || ""); previewPresetChanges(); };
+$("btnClearQuickTreatment").onclick = ()=>{ document.querySelectorAll(".quickTreatmentPreset").forEach(inp=> inp.value = ""); previewPresetChanges(); };
 
 $("btnCasesHint").onclick = ()=> { toggleCollapse("schoolPanel"); $("schoolPanel")?.scrollIntoView({behavior:"smooth", block:"start"}); };
 $("btnChecklistSettingsHint").onclick = ()=> { switchTab(1); toggleCollapse("schoolPanel"); $("schoolPanel")?.scrollIntoView({behavior:"smooth", block:"start"}); };
@@ -2147,6 +2169,13 @@ document.querySelectorAll("input, textarea, select").forEach(el=>{
       || el.classList.contains("quickStatusPreset") || el.classList.contains("quickSymptomsPreset") || el.classList.contains("quickTreatmentPreset")) return;
     buildScript();
     saveIncident();
+  });
+});
+
+/* ===== 修正: 設定プリセット入力の編集/空が即時反映されるようにする ===== */
+document.querySelectorAll(".casePreset, .checkPreset, .quickStatusPreset, .quickSymptomsPreset, .quickTreatmentPreset").forEach(el=>{
+  el.addEventListener("input", ()=>{
+    previewPresetChanges();
   });
 });
 
