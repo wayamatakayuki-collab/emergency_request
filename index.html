@@ -1537,7 +1537,7 @@ function voiceSupportedHint(){
   const el = $("voiceSupportHint");
   if(!el) return;
   if(SpeechRecognition && isSecure() && !isIOS()){
-    el.textContent = "✅ 音声入力ができない場合は下の「キーボードのマイク」から）";
+    el.textContent = "✅ 音声入力ができない場合は下の「キーボードのマイク」から";
   }else{
     el.textContent = "※ うまく動かない場合は下の「キーボードのマイク」で入力";
   }
