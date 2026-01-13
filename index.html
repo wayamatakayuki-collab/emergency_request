@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>救急要請サポート（現場最強 v18）</title>
+  <title>救急要請サポートアプリ</title>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
@@ -30,6 +30,13 @@
       appearance: none;
       padding-right: 10px;
       border-radius: 0.75rem;
+    }
+
+    /* 生年月日（#pBirth）の縦位置（上詰め）対策 */
+    #pBirth{
+      line-height: 48px;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
     }
 
     input, select, textarea{ min-height: 48px; }
@@ -84,6 +91,7 @@
       100% { transform: scale(1.55); opacity: 0; }
     }
 
+    /* ===== 印刷/Word向け（旧レイアウトに完全復帰） ===== */
     @media print{
       .no-print{ display:none !important; }
       body{ background:#fff !important; padding:0 !important; }
@@ -145,17 +153,14 @@
     <div class="px-4 py-3 flex items-center justify-between gap-3">
       <div class="flex flex-col">
         <h1 class="text-base font-black leading-tight text-red-600">救急要請サポート</h1>
-        <div class="text-[10px] text-slate-400 font-bold">現場最強 v18（削除確認1回/開始終了エラー修正/反応安定化）</div>
+        <div class="text-[10px] text-slate-400 font-bold">（削除確認1回/開始終了エラー修正/反応安定化）</div>
       </div>
 
       <div class="flex items-center gap-2">
         <button id="btnOpenSettings" class="px-3 py-2 rounded-full border text-xs font-black text-slate-700">
           設定
         </button>
-        <a href="tel:119" class="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-black flex items-center gap-2 animate-pulse">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
-          119
-        </a>
+        <!-- 「119」のボタンや機能は削除 -->
       </div>
     </div>
   </header>
@@ -428,11 +433,12 @@
         <div class="flex items-center justify-between gap-2">
           <div>
             <div class="font-black text-sm">経過・処置の記録</div>
-            <div class="text-[10px] font-black text-slate-500">発生〜引継ぎまで「全部ここに」残す</div>
+            <!-- ✅ v25: 文言を削除し、ここに最新LOGを表示 -->
+            <div id="latestLogPreview" class="text-[10px] font-black text-slate-500 leading-snug">最新LOG：（記録なし）</div>
           </div>
 
           <div class="flex items-center gap-2">
-            <button id="btnOpenLogViewer" class="px-3 py-2 rounded-full border text-xs font-black">👀 全件</button>
+            <button id="btnOpenLogViewer" class="px-3 py-2 rounded-full border text-xs font-black">全件LOG</button>
           </div>
         </div>
 
@@ -480,9 +486,9 @@
         <div class="flex items-center justify-between">
           <div>
             <div class="font-black text-sm">メモ（音声入力）</div>
+            <!-- ✅ v25: 説明をすっきり -->
             <div class="text-[10px] font-black text-slate-500">
-              対応端末：ボタンでリアルタイム文字起こし → 「記録」でログ化<br>
-              iPhone等未対応：<span class="text-slate-900 font-black">キーボードのマイク（音声入力）</span>を使用
+              音声が動かない場合は、下の「キーボードのマイク」で入力してください
             </div>
           </div>
 
@@ -553,7 +559,7 @@
           </div>
 
           <div class="grid grid-cols-1 gap-2">
-            <button id="btnQuickAmbulance" class="quick-tag bg-slate-900 text-white rounded-2xl text-xs font-black">
+            <button id="btnQuickAmbulance" class="quick-tag bg-slate-900 text-white rounded-2xl text-base font-black">
               救急車 到着
             </button>
           </div>
@@ -604,7 +610,7 @@
 
     <div class="absolute inset-0 bg-white flex flex-col">
       <div class="sticky top-0 bg-white border-b p-3 flex items-center gap-2">
-        <div class="font-black">👀 記録 全件ビュー</div>
+        <div class="font-black">全件LOG</div>
         <button id="btnCloseLogViewer" class="ml-auto px-3 py-2 rounded-full border text-xs font-black">閉じる</button>
       </div>
 
@@ -930,7 +936,14 @@ function toggleAccordion(id){
 }
 
 /* ===================== tab ===================== */
+let activeTab = 1;
+
 function switchTab(tabNum){
+  activeTab = tabNum;
+
+  // リロード後もタブ維持
+  try{ sessionStorage.setItem("emergency_active_tab", String(activeTab)); }catch(e){}
+
   if(tabNum===1){
     $("section1")?.classList.remove("hidden");
     $("section2")?.classList.add("hidden");
@@ -946,6 +959,35 @@ function switchTab(tabNum){
 }
 $("nav1").onclick = () => switchTab(1);
 $("nav2").onclick = () => switchTab(2);
+
+/* リロード後も「今の場所」にとどまる（タブ＋スクロール） */
+(function viewStatePersistence(){
+  const TAB_KEY = "emergency_active_tab";
+  const SCROLL_KEY = "emergency_scroll_y";
+
+  function saveView(){
+    try{
+      sessionStorage.setItem(TAB_KEY, String(activeTab || 1));
+      sessionStorage.setItem(SCROLL_KEY, String(window.scrollY || 0));
+    }catch(e){}
+  }
+
+  window.addEventListener("beforeunload", saveView);
+  window.addEventListener("pagehide", saveView);
+
+  window.restoreViewState = function(){
+    try{
+      const t = parseInt(sessionStorage.getItem(TAB_KEY) || "1", 10);
+      if(t === 2) switchTab(2); else switchTab(1);
+
+      const y = parseInt(sessionStorage.getItem(SCROLL_KEY) || "0", 10);
+      if(!isNaN(y)){
+        setTimeout(()=>{ try{ window.scrollTo(0, y); }catch(e){} }, 0);
+        setTimeout(()=>{ try{ window.scrollTo(0, y); }catch(e){} }, 120);
+      }
+    }catch(e){}
+  };
+})();
 
 /* ===================== keys ===================== */
 const SETTINGS_KEY_V18 = "school_emergency_settings_v18";
@@ -1201,6 +1243,8 @@ function buildScript(){
     pGrade: gradeStr,
     pSex: val("pSex") || "（性別不明）",
     symptom: val("symptom") || "（症状不明）",
+    history: val("pHistory") || "（未入力）",
+    allergy: val("pAllergy") || "（未入力）",
     age: ageStr
   };
 
@@ -1215,8 +1259,8 @@ function buildScript(){
 
 対象：${data.pName}さん（${data.pGrade}・${data.pSex}${data.age ? "・" + data.age : ""}）
 症状：${data.symptom}
-
-正門にて誘導待機中です。`;
+既往歴：${data.history}
+アレルギー：${data.allergy}`;
 }
 
 /* ===================== logging ===================== */
@@ -1259,9 +1303,11 @@ function renderTimeline(){
   if(entries.length===0){
     empty.classList.remove("hidden");
     wrap.appendChild(empty);
+    updateIncidentBar();
     return;
   }
   empty.classList.add("hidden");
+  wrap.appendChild(empty);
 
   const list = entries.slice().reverse();
   list.forEach(e=>{
@@ -1276,14 +1322,35 @@ function renderTimeline(){
     `;
     wrap.appendChild(div);
   });
+
+  updateIncidentBar();
 }
 
 /* ===================== incident bar ===================== */
 let incidentTimer = null;
+
+/* ✅ v25: 最新LOG表示（ここに反映） */
+function updateLatestLogPreview(){
+  const el = $("latestLogPreview");
+  if(!el) return;
+  const entries = Array.isArray(incident.entries) ? incident.entries : [];
+  if(entries.length===0){
+    el.textContent = "最新LOG：（記録なし）";
+    return;
+  }
+  const last = entries[entries.length - 1];
+  const raw = String(last.text || "").replace(/\s+/g, " ").trim();
+  const short = raw.length > 40 ? (raw.slice(0, 40) + "…") : raw;
+  el.textContent = `最新LOG：${last.time} ${short || "（内容なし）"}`;
+}
+
 function updateIncidentBar(){
   setText("incidentStartLabel", incident.startTs ? fmtDateTime(incident.startTs).split(" ").slice(-1)[0] : "--:--");
   const entries = Array.isArray(incident.entries) ? incident.entries : [];
   setText("lastEntryLabel", entries.length ? entries[entries.length-1].time : "--:--");
+
+  /* ✅ v25 */
+  updateLatestLogPreview();
 
   if(incident.active && incident.startTs){
     setText("incidentElapsedLabel", msToElapsed(Date.now() - incident.startTs));
@@ -1464,26 +1531,29 @@ function isIOS(){
 function isSecure(){
   return window.isSecureContext || location.protocol === "https:" || location.hostname === "localhost";
 }
+
+/* ✅ v25: 説明を簡潔化 */
 function voiceSupportedHint(){
-  const parts = [];
-  if(!isSecure()){
-    parts.push("⚠️ 音声入力はHTTPS環境でないと動かない場合があります（file://は不可のことが多い）");
-  }
-  if(!SpeechRecognition){
-    parts.push("この端末/ブラウザは「ブラウザ音声認識」未対応です。iPhoneはキーボードのマイクで入力してください。");
-  }else if(isIOS()){
-    parts.push("iPhoneはブラウザ音声認識が不安定/未対応のことがあります。動かない場合は下のボタン（キーボード音声入力）を使用してください。");
+  const el = $("voiceSupportHint");
+  if(!el) return;
+  if(SpeechRecognition && isSecure() && !isIOS()){
+    el.textContent = "✅ 音声ボタンで入力可（うまく動かない場合は下の「キーボードのマイク」）";
   }else{
-    parts.push("対応端末では、RECでリアルタイム文字起こしします。");
+    el.textContent = "※ うまく動かない場合は下の「キーボードのマイク」で入力";
   }
-  if($("voiceSupportHint")) $("voiceSupportHint").textContent = parts.join(" / ");
 }
+
 function setupRecognition(){
   if(!SpeechRecognition) return;
-  recognition = new SpeechRecognition();
+  try{
+    recognition = new SpeechRecognition();
+  }catch(e){
+    recognition = null;
+    return;
+  }
   recognition.lang = "ja-JP";
-  recognition.continuous = true;
-  recognition.interimResults = true;
+  try{ recognition.continuous = true; }catch(e){}
+  try{ recognition.interimResults = true; }catch(e){}
 
   recognition.onresult = (event)=>{
     let interim = "";
@@ -1543,9 +1613,17 @@ function stopRec(){
 }
 function focusForKeyboardDictation(){
   stopRec();
-  $("voiceInputArea")?.focus();
-  $("voiceInputArea")?.scrollIntoView({behavior:"smooth", block:"center"});
-  alert("この端末ではブラウザの音声認識が動かない場合があります。\n\n✅ 対処：キーボードのマイク（音声入力）を使ってください。\n（入力欄をタップ → キーボードのマイク）");
+  const area = $("voiceInputArea");
+  if(area){
+    area.focus();
+    area.scrollIntoView({behavior:"smooth", block:"center"});
+    area.classList.add("ring-2","ring-amber-400");
+    setTimeout(()=>{ try{ area.classList.remove("ring-2","ring-amber-400"); }catch(e){} }, 1200);
+  }
+  if($("voiceSupportHint")){
+    $("voiceSupportHint").textContent = "👇 キーボードのマイクで入力";
+  }
+  if($("interimText")) $("interimText").innerText = "";
 }
 function startRec(){
   if(isIOS() && !SpeechRecognition){
@@ -1761,7 +1839,10 @@ function handleLvAction(ev){
 
 /* ===================== report build (print + word) ===================== */
 function buildReportData(){
-  const schoolLine = `${val("schoolName") || "未設定"} / ${val("schoolAddr") || "住所未設定"} / ${val("schoolPhone") || "電話未設定"}`;
+  const schoolName = val("schoolName") || "未設定";
+  const schoolAddr = val("schoolAddr") || "住所未設定";
+  const schoolPhone = val("schoolPhone") || "電話未設定";
+  const schoolLine = `${schoolName}\n${schoolAddr}\n${schoolPhone}`;
 
   const start = incident.startTs ? fmtDateTime(incident.startTs) : "未記録";
   const end   = incident.endTs ? fmtDateTime(incident.endTs) : (incident.active ? "継続中" : "未記録");
@@ -1773,9 +1854,10 @@ function buildReportData(){
   const gradeStr = String(gradeVal).match(/^\d$/) ? `${gradeVal}年` : gradeVal;
   const patientLine = `${val("pName") || "氏名未詳"} / ${gradeStr} / ${val("pSex") || "-"} / ${incident.computedAgeStr || "--"}歳`;
 
-  let medInfo = `【症状】${val("symptom") || "未入力"}`;
-  if(val("pHistory")) medInfo += `  【既往】${val("pHistory")}`;
-  if(val("pAllergy")) medInfo += `  【アレルギー】${val("pAllergy")}`;
+  const medSym = val("symptom") || "未入力";
+  const medHis = val("pHistory") || "未入力";
+  const medAll = val("pAllergy") || "未入力";
+  const medInfo = `現在の主な症状：${medSym}\n既往歴：${medHis}\nアレルギー：${medAll}`;
 
   const items = checklistItems();
   const ok = items.filter(x=>incident.checklist[x]);
@@ -1793,92 +1875,131 @@ function buildReportData(){
   };
 }
 
+/* 旧コードのWord出力レイアウトに復帰 */
 function buildWordHtml(data){
-  const rows = data.entries.length
-    ? data.entries.map(e => `
-      <tr>
-        <td style="width:90px;font-weight:bold;vertical-align:top;border-bottom:1px solid #ccc;padding:6px;">${escapeHtml(e.time)}${e.important ? " ★" : ""}</td>
-        <td style="border-bottom:1px solid #ccc;padding:6px;">${escapeHtml(e.text)}</td>
-      </tr>
-    `).join("")
-    : `<tr><td colspan="2" style="padding:10px;color:#666;">記録はありません</td></tr>`;
+  const schoolHtml = escapeHtml(data.schoolLine).replaceAll("\n","<br>");
+  const medHtml = escapeHtml(data.medInfo).replaceAll("\n","<br>");
+  const checklistHtml = data.checklistOk.length
+    ? data.checklistOk.map(x=>`✓ ${escapeHtml(x)}`).join("<br>")
+    : "（完了なし）";
 
-  const checklistHtml = (checklistItems().length===0)
-    ? `<div>（未設定）</div>`
-    : `<div><b>完了：</b>${escapeHtml(data.checklistOk.length ? data.checklistOk.join(" / ") : "なし")}</div>
-       <div><b>未：</b>${escapeHtml(data.checklistNg.length ? data.checklistNg.join(" / ") : "なし")}</div>`;
+  const timelineHtml = data.entries.length
+    ? data.entries.map(e=>`
+      <div class="timeline-item">
+        <div class="time">${escapeHtml(e.time)}${e.important ? " ★" : ""}</div>
+        <div class="text">${escapeHtml(e.text).replaceAll("\n","<br>")}</div>
+      </div>
+    `).join("")
+    : `<div class="timeline-item"><div class="text">記録はありません</div></div>`;
 
   return `
 <html>
 <head>
 <meta charset="UTF-8">
 <style>
-  body{ font-family: "Meiryo","Yu Gothic","MS PGothic",sans-serif; }
+  body{ font-family: "Meiryo","Yu Gothic","MS PGothic",sans-serif; line-height:1.45; }
   h1{ font-size: 20pt; margin: 0 0 6pt 0; }
   .sub{ color:#666; font-size:10pt; margin-bottom:10pt; }
-  .box{ border:1px solid #000; padding:10pt; margin-bottom:10pt; }
-  table{ border-collapse:collapse; width:100%; }
+  .box{ border:1px solid #000; padding:10pt; }
+  table{ width:100%; border-collapse:collapse; }
+  td{ vertical-align:top; }
+  .label{ font-size:9pt; color:#666; font-weight:700; margin:0 0 4pt 0; }
+  .val{ font-size:10.5pt; font-weight:700; margin:0; }
+  .rowline{ border-top:1px solid #ccc; padding-top:8pt; margin-top:8pt; }
+  .timeline-wrap{ border-top:2px solid #000; margin-top:6pt; }
+  .timeline-item{ border-bottom:1px solid #ccc; padding:8pt 0; page-break-inside: avoid; }
+  .time{ width:90px; display:inline-block; font-weight:700; }
+  .text{ display:inline-block; width:calc(100% - 100px); white-space:pre-wrap; word-break:break-word; font-weight:700; }
 </style>
 </head>
 <body>
   <h1>救急搬送・経過記録用紙</h1>
-  <div class="sub">作成日：${escapeHtml(data.created)}（現場最強 v18）</div>
+  <div class="sub">作成日：${escapeHtml(data.created)}（現場最強 v18 / 端末ローカル記録）</div>
 
   <div class="box">
-    <div><b>学校名 / 住所 / 電話：</b>${escapeHtml(data.schoolLine)}</div>
-    <div style="margin-top:6pt;"><b>発生 / 終了 / 経過：</b>${escapeHtml(data.incidentLine)}</div>
-    <div style="margin-top:6pt;"><b>傷病者：</b>${escapeHtml(data.patientLine)}</div>
-    <div style="margin-top:6pt;"><b>現在の主な症状・既往歴・アレルギー：</b><br>${escapeHtml(data.medInfo)}</div>
-    <div style="margin-top:6pt;"><b>初動チェック状況：</b><br>${checklistHtml}</div>
+    <table>
+      <tr>
+        <td style="width:50%; padding-right:10pt;">
+          <p class="label">学校名 / 住所 / 電話</p>
+          <p class="val">${schoolHtml}</p>
+        </td>
+        <td style="width:50%;">
+          <p class="label">発生 / 終了 / 経過</p>
+          <p class="val">${escapeHtml(data.incidentLine)}</p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="rowline">
+          <p class="label">傷病者（氏名 / 学年 / 性別 / 年齢）</p>
+          <p class="val">${escapeHtml(data.patientLine)}</p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="rowline">
+          <p class="label">現在の主な症状・既往歴・アレルギー</p>
+          <p style="margin:0; font-weight:700;">${medHtml}</p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="rowline">
+          <p class="label">初動チェック状況</p>
+          <div style="font-weight:700;">${checklistHtml}</div>
+        </td>
+      </tr>
+    </table>
   </div>
 
-  <h2 style="font-size:14pt;border-left:4px solid #000;padding-left:6pt;">時系列記録</h2>
-  <table>
-    ${rows}
-  </table>
+  <h2 style="font-size:14pt;border-left:4px solid #000;padding-left:6pt;margin:12pt 0 6pt 0;">時系列記録</h2>
+  <div class="timeline-wrap">
+    ${timelineHtml}
+  </div>
 </body>
 </html>`;
 }
 
-/* ===================== print ===================== */
+/* ===================== print（旧レイアウトに復帰） ===================== */
 $("btnPrint").onclick = ()=>{
   const d = buildReportData();
   setText("printTimestamp", `作成日：${d.created}`);
-  setText("printSchoolInfo", d.schoolLine);
+
+  const sc = $("printSchoolInfo");
+  if(sc) sc.innerHTML = escapeHtml(d.schoolLine).replaceAll("\n","<br>");
+
   setText("printIncidentInfo", d.incidentLine);
   setText("printPatientInfo", d.patientLine);
-  setText("printMedicalInfo", d.medInfo);
 
-  const items = checklistItems();
+  const med = $("printMedicalInfo");
+  if(med) med.innerHTML = escapeHtml(d.medInfo).replaceAll("\n","<br>");
+
   const chk = $("printChecklist");
   if(chk){
-    if(items.length===0){
-      chk.innerText = "（未設定）";
-    }else{
-      chk.innerHTML =
-        `<div><b>完了：</b>${escapeHtml(d.checklistOk.length ? d.checklistOk.join(" / ") : "なし")}</div>` +
-        `<div><b>未：</b>${escapeHtml(d.checklistNg.length ? d.checklistNg.join(" / ") : "なし")}</div>`;
-    }
+    chk.innerHTML = d.checklistOk.length
+      ? d.checklistOk.map(x=>`<div>✓ ${escapeHtml(x)}</div>`).join("")
+      : "（完了なし）";
   }
 
-  const container = $("printTimeline");
-  if(container){
-    container.innerHTML = "";
+  const tl = $("printTimeline");
+  if(tl){
+    tl.innerHTML = "";
     if(d.entries.length===0){
-      container.innerHTML = "<p class='py-4 text-center text-sm text-gray-400'>記録はありません</p>";
+      tl.innerHTML = `<div class="timeline-item py-2 text-sm text-gray-500">記録はありません</div>`;
     }else{
       d.entries.forEach(e=>{
-        const row = document.createElement("div");
-        row.className = "flex border-b border-gray-300 py-2 timeline-item";
-        row.innerHTML = `<div class="w-24 font-bold text-sm">${escapeHtml(e.time)}${e.important ? " ★" : ""}</div><div class="flex-1 text-sm">${escapeHtml(e.text)}</div>`;
-        container.appendChild(row);
+        const item = document.createElement("div");
+        item.className = "timeline-item py-2 flex gap-3";
+        item.innerHTML = `
+          <div class="w-20 font-bold whitespace-nowrap">${escapeHtml(e.time)}${e.important ? " ★" : ""}</div>
+          <div class="flex-1 whitespace-pre-wrap break-words font-bold">${escapeHtml(e.text)}</div>
+        `;
+        tl.appendChild(item);
       });
     }
   }
+
   window.print();
 };
 
-/* ===================== Word export ===================== */
+/* ===================== Word export（旧レイアウトに復帰） ===================== */
 $("btnWord").onclick = ()=>{
   const d = buildReportData();
   const html = buildWordHtml(d);
@@ -1953,6 +2074,7 @@ $("btnResetAll").onclick = ()=>{
   saveIncident();
   loadIncident();
   stopIncidentTimer();
+  if(!$("logViewerWrap")?.classList.contains("hidden")) renderLogViewer();
   alert("消去しました。");
 };
 
@@ -2082,6 +2204,9 @@ buildScript();
 setupRecognition();
 voiceSupportedHint();
 renderQuickButtons();
+
+/* リロード後の表示復元（タブ＋スクロール） */
+window.restoreViewState?.();
 </script>
 </body>
 </html>
