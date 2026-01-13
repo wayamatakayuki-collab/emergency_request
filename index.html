@@ -108,9 +108,8 @@
   <div class="print-report">
     <div class="border-b-2 border-black pb-2 mb-4 flex justify-between items-end">
       <div>
-       <!-- 置き換え①：タイトル＆サブ（現場最強 v18 を削除） -->
-<h1 class="text-2xl font-bold">救急対応・経過記録</h1>
-<div class="text-xs text-gray-600 mt-1">（端末ローカル記録）</div>
+        <h1 class="text-2xl font-bold">救急対応・経過記録</h1>
+        <div class="text-xs text-gray-600 mt-1">（端末ローカル記録）</div>
       </div>
       <p id="printTimestamp" class="text-sm"></p>
     </div>
@@ -121,7 +120,7 @@
         <p id="printSchoolInfo" class="text-sm font-bold"></p>
       </div>
       <div>
-        <p class="text-xs font-bold text-gray-500">発生 / 終了 / 経過</p>
+        <p class="text-xs font-bold text-gray-500">開始 / 終了 / 経過</p>
         <p id="printIncidentInfo" class="text-sm font-bold"></p>
       </div>
 
@@ -1880,6 +1879,7 @@ function buildReportData(){
 function buildWordHtml(data){
   const schoolHtml = escapeHtml(data.schoolLine).replaceAll("\n","<br>");
   const medHtml = escapeHtml(data.medInfo).replaceAll("\n","<br>");
+  const incidentHtml = escapeHtml(data.incidentLine).replaceAll("\n","<br>");
   const checklistHtml = data.checklistOk.length
     ? data.checklistOk.map(x=>`✓ ${escapeHtml(x)}`).join("<br>")
     : "（完了なし）";
@@ -1914,8 +1914,8 @@ function buildWordHtml(data){
 </style>
 </head>
 <body>
-  <h1>救急搬送・経過記録用紙</h1>
-  <div class="sub">作成日：${escapeHtml(data.created)}（現場最強 v18 / 端末ローカル記録）</div>
+  <h1>救急対応・経過記録</h1>
+  <div class="sub">作成日：${escapeHtml(data.created)}（端末ローカル記録）</div>
 
   <div class="box">
     <table>
@@ -1925,8 +1925,8 @@ function buildWordHtml(data){
           <p class="val">${schoolHtml}</p>
         </td>
         <td style="width:50%;">
-          <p class="label">発生 / 終了 / 経過</p>
-          <p class="val">${escapeHtml(data.incidentLine)}</p>
+          <p class="label">開始 / 終了 / 経過</p>
+          <p class="val">${incidentHtml}</p>
         </td>
       </tr>
       <tr>
@@ -1966,7 +1966,9 @@ $("btnPrint").onclick = ()=>{
   const sc = $("printSchoolInfo");
   if(sc) sc.innerHTML = escapeHtml(d.schoolLine).replaceAll("\n","<br>");
 
-  setText("printIncidentInfo", d.incidentLine);
+  const inc = $("printIncidentInfo");
+  if(inc) inc.innerHTML = escapeHtml(d.incidentLine).replaceAll("\n","<br>");
+
   setText("printPatientInfo", d.patientLine);
 
   const med = $("printMedicalInfo");
