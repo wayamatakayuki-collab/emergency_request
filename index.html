@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>救急要請サポートアプリ</title>
+  <title>救急対応サポートアプリ</title>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
@@ -152,7 +152,7 @@
   <header class="sticky top-0 z-30 bg-white shadow-sm border-b no-print">
     <div class="px-4 py-3 flex items-center justify-between gap-3">
       <div class="flex flex-col">
-        <h1 class="text-base font-black leading-tight text-red-600">救急要請サポート</h1>
+        <h1 class="text-base font-black leading-tight text-red-600">救急対応サポート</h1>
         <div class="text-[10px] text-slate-400 font-bold">（v1）</div>
       </div>
 
@@ -214,7 +214,7 @@
           <!-- よく起きるケース（最大10） -->
           <div class="bg-white border rounded-2xl p-3 space-y-2">
             <div class="flex items-center justify-between">
-              <div class="font-black text-sm">よく起きるケース（最大10）</div>
+              <div class="font-black text-sm text-red-600">よく起きるケース（最大10）</div>
               <div class="text-[10px] font-black text-slate-500">学校ごとに設定</div>
             </div>
             <div class="grid grid-cols-1 gap-2">
@@ -238,7 +238,7 @@
           <!-- 初動チェック（最大10） -->
           <div class="bg-white border rounded-2xl p-3 space-y-2">
             <div class="flex items-center justify-between">
-              <div class="font-black text-sm">初動チェック（最大10）</div>
+              <div class="font-black text-sm text-red-600">初動チェック（最大10）</div>
               <div class="text-[10px] font-black text-slate-500">チェックで自動記録</div>
             </div>
             <div class="grid grid-cols-1 gap-2">
@@ -262,7 +262,7 @@
           <!-- クイック入力（各最大10） -->
           <div class="bg-white border rounded-2xl p-3 space-y-3">
             <div class="flex items-center justify-between">
-              <div class="font-black text-sm">クイック入力（各最大10）</div>
+              <div class="font-black text-sm text-red-600">クイック入力（各最大10）</div>
               <div class="text-[10px] font-black text-slate-500">※「表示|記録」</div>
             </div>
 
@@ -281,8 +281,8 @@
                 <input class="quickStatusPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="9" />
               </div>
               <div class="grid grid-cols-2 gap-2">
-                <button id="btnRestoreDefaultQuickStatus" class="py-3 rounded-2xl bg-white border text-xs font-black">初期値</button>
-                <button id="btnClearQuickStatus" class="py-3 rounded-2xl bg-white border text-xs font-black">空</button>
+                <button id="btnRestoreDefaultQuickStatus" class="py-3 rounded-2xl bg-white border text-xs font-black">初期セットに戻す</button>
+                <button id="btnClearQuickStatus" class="py-3 rounded-2xl bg-white border text-xs font-black">空にする</button>
               </div>
             </div>
 
@@ -301,8 +301,8 @@
                 <input class="quickSymptomsPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="9" />
               </div>
               <div class="grid grid-cols-2 gap-2">
-                <button id="btnRestoreDefaultQuickSymptoms" class="py-3 rounded-2xl bg-white border text-xs font-black">初期値</button>
-                <button id="btnClearQuickSymptoms" class="py-3 rounded-2xl bg-white border text-xs font-black">空</button>
+                <button id="btnRestoreDefaultQuickSymptoms" class="py-3 rounded-2xl bg-white border text-xs font-black">初期セットに戻す</button>
+                <button id="btnClearQuickSymptoms" class="py-3 rounded-2xl bg-white border text-xs font-black">空にする</button>
               </div>
             </div>
 
@@ -321,8 +321,8 @@
                 <input class="quickTreatmentPreset w-full p-3 bg-slate-50 border rounded-xl text-sm font-black" data-idx="9" />
               </div>
               <div class="grid grid-cols-2 gap-2">
-                <button id="btnRestoreDefaultQuickTreatment" class="py-3 rounded-2xl bg-white border text-xs font-black">初期値</button>
-                <button id="btnClearQuickTreatment" class="py-3 rounded-2xl bg-white border text-xs font-black">空</button>
+                <button id="btnRestoreDefaultQuickTreatment" class="py-3 rounded-2xl bg-white border text-xs font-black">初期セットに戻す</button>
+                <button id="btnClearQuickTreatment" class="py-3 rounded-2xl bg-white border text-xs font-black">空にする</button>
               </div>
             </div>
 
@@ -332,7 +332,7 @@
           </div>
 
           <div class="grid grid-cols-2 gap-2">
-            <button id="btnSaveSettings" class="py-4 bg-slate-900 text-white text-sm rounded-2xl font-black">このスマホに保存</button>
+            <button id="btnSaveSettings" class="py-4 bg-slate-900 text-white text-sm rounded-2xl font-black">設定を端末に保存</button>
             <button id="btnExportSettings" class="py-4 bg-white border text-sm rounded-2xl font-black">設定を共有</button>
           </div>
         </div>
@@ -510,7 +510,7 @@
           <div id="voiceSupportHint" class="mt-1 text-[10px] font-bold text-slate-500 text-center leading-snug"></div>
 
           <button id="btnKeyboardDictation" class="mt-2 w-full py-3 rounded-2xl bg-white border text-sm font-black">
-            キーボードのマイクで音声入力する
+            キーボードのマイクで音声入力
           </button>
         </div>
 
@@ -1549,9 +1549,9 @@ function voiceSupportedHint(){
   const el = $("voiceSupportHint");
   if(!el) return;
   if(SpeechRecognition && isSecure() && !isIOS()){
-    el.textContent = "✅ 音声入力ができない場合は下の「キーボードのマイク」から";
+    el.textContent = "✅ 音声入力ができない場合は、下の「キーボードのマイク」で入力";
   }else{
-    el.textContent = "※ うまく動かない場合は下の「キーボードのマイク」で入力";
+    el.textContent = "✅ 音声入力ができない場合は、下の「キーボードのマイク」で入力";
   }
 }
 
@@ -2124,8 +2124,8 @@ $("btnExportSettings").onclick = async ()=>{
     quickSymptoms: settings.quickSymptoms || [],
     quickTreatment: settings.quickTreatment || []
   };
-  const txt = `【救急要請サポート 設定（v18）】\n` + JSON.stringify(pack, null, 2);
-  await shareText("救急要請サポート 設定（v18）", txt);
+  const txt = `【救急対応サポート 設定】\n` + JSON.stringify(pack, null, 2);
+  await shareText("救急対応サポート 設定", txt);
 };
 
 $("btnRestoreDefaultCases").onclick = ()=>{ document.querySelectorAll(".casePreset").forEach((inp,idx)=> inp.value = DEFAULT_CASES[idx] || ""); previewPresetChanges(); };
@@ -2198,7 +2198,7 @@ $("lvAddDo").onclick = ()=>{
 $("btnExportCSV").onclick = ()=>{
   saveSettings();
   const csv = settingsToCSV();
-  downloadFile(`救急要請サポート_設定_${ymd_hm()}.csv`, csv, "text/csv;charset=utf-8");
+  downloadFile(`救急対応サポート_設定_${ymd_hm()}.csv`, csv, "text/csv;charset=utf-8");
   alert("設定CSVを保存しました。");
 };
 $("btnImportCSV").onclick = ()=> $("csvFile")?.click();
